@@ -1,0 +1,86 @@
+<% subtitle = {j:"列車運用一覧", e:"Train Runs", c:"列车运用一览", k:"열차신청섬광"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"列車運用一覧", e:"Train Runs", c:"列车运用一览", k:"열차신청섬광"}[lang] %></h2>
+
+<% var nagivation_menu = function(){ %>
+
+<p>
+	<a href="/run-no/WK" class="btn <%=(req.params.dayType=='WK')?'btn-wk':'btn-nonselected'%>"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><a href="/run-no/PH" class="btn <%=(req.params.dayType=='PH')?'btn-ph':'btn-nonselected'%>"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+</p>
+
+<% } %>
+<% nagivation_menu() %>
+
+<p>
+	<select class="custom-select" id="group_select">
+		<option selected value="">-- <%= {j:"運用番号選択", e:"Select Run Number", c:"运用编号选择", k:"신청번호선택"}[lang] %> --</option>
+		<% for (var i in runNoGroups){
+			var a = runNoGroups[i].from;
+			var b = runNoGroups[i].to;
+		%>
+		<option value="<%= i %>"><%= runs[a].runNo1 + " ~ " + runs[b].runNo2 %></option>
+		<% } %>
+	</select>
+</p>
+
+<script language="javascript">
+	$("#group_select").change(function(){
+		var group = 	$("#group_select").val();
+		if (group != ""){
+			window.location.href = "#run" + group;
+			$("#group_select").val("");
+		}
+	});
+</script>
+
+<% for (var i in runNoGroups){
+	var a = runNoGroups[i].from;
+	var b = runNoGroups[i].to;
+%>
+
+<div class="card run-no-list-card">
+	<div class="card-header d-flex justify-content-between" id="run<%= i %>">
+		<div><%= runs[a].runNo1 + " ~ " + runs[b].runNo2 %></div>
+		<div><a href="#top" style="color: white;"><%= {j: "先頭", e: "Top", c: "页顶", k: "맨위로"}[lang] %>▴</a></div>
+	</div>
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table run-no-list-table">
+				<thead>
+					<tr class="thead-light">
+						<th><%= {j:"上り", e:"UP", c:"上行", k:"상향"}[lang] %></th>
+						<th><%= {j:"下り", e:"DN", c:"下行", k:"하향"}[lang] %></th>
+						<th><%= {j:"運用開始", e:"Start At", c:"运用开始", k:"신청시작"}[lang] %></th>
+						<th><%= {j:"運用終了", e:"End At", c:"运用结束", k:"신청끝"}[lang] %></th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for (var i = a; i <= b; i++){ %>
+					<% var $url = "/run-no/" + req.params.dayType + "/" + runs[i].runNo1 + "/" + runs[i].runNo2; %>
+					<tr class="clickable" data-href="<%=$url%>">
+						<td><a href="<%=$url%>"><%= runs[i].runNo1 %></a></td>
+						<td><a href="<%=$url%>"><%= runs[i].runNo2 %></a></td>
+						<td><a href="<%=$url%>"><%= runs[i].beginTime %> <%= runs[i].beginStop_name[lang] %></a></td>
+						<td><a href="<%=$url%>"><%= runs[i].terminateTime %> <%= runs[i].terminateStop_name[lang] %></a></td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<% } %>
+
+<script language="javascript">
+	$(".clickable").click(function() {
+		window.location = $(this).data("href");
+	});
+</script>
+
+<div class="sch-change"><%= sch_change[lang] %></div>
+
+<% nagivation_menu() %>
+
+<%- include('footer'); %>

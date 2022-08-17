@@ -1,0 +1,137 @@
+<% subtitle = {j:"列車詳細", e:"Train Details", c:"列车详情", k:"기차세부정보"} %>
+<%- include('header'); %>
+
+<h2><%= {j:"列車詳細", e:"Train Details", c:"列车详情", k:"기차세부정보"}[lang] %></h2>
+
+<%
+function showTrip(tripNo){
+	var myTrip = trips[tripNo];
+%>
+
+<div class="table-responsive">
+	<table class="table trip-table trip-table-upper">
+		<tr class="thead-light">
+			<th><%= {j:"ダイヤ", e:"Schedule", c:"运行日", k:"러닝데이"}[lang] %></th>
+			<td><%= (req.params.dayType == "WK") ? {j:"平日 (月 ~ 金曜日)", e:"Weekdays (Monday - Friday)", c:"平日 (周一至周五)", k:"평일 (월요일 ~ 금요일)"}[lang] : {j:"土曜日・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></td>
+		</tr>
+		<tr class="thead-light">
+			<th><%= {j:"列車番号", e:"Trip No.", c:"班次编号", k:"기차번호"}[lang] %></th>
+			<td>
+				<%= tripNo %>
+				<a href="/run-no/<%= req.params.dayType %>/<%= tripNo.substring(2) %>" class="btn btn-secondary btn-custom">
+					<%= {j:"運用詳細", e:"Run Details", c:"运用详情", k:"신청세부"}[lang] %>
+				</a>
+			</td>
+		</tr>
+		<tr class="thead-light">
+				<th><%= {j:"予約番号", e:"Reference No.", c:"预约编号", k:"예약번호"}[lang] %></th>
+				<td><%= (myTrip.refNo == "") ? "/" : myTrip.refNo %></td>
+		</tr>
+		<tr class="thead-light">
+			<th><%= {j:"列車種別", e:"Train Type", c:"列车类別", k:"기차종별"}[lang] %></th>
+			<td style="background: <%= myTrip.trainType_color.bg %>; color: <%= myTrip.trainType_color.text %>;"><%= myTrip.trainType_name[lang] %></td>
+		</tr>
+		<tr class="thead-light">
+			<th><%= {j:"列車編成", e:"Train Formation", c:"列车编成", k:"열차형성"}[lang] %></th>
+			<td><%= myTrip.consist.remark[lang] %></td>
+		</tr>
+		<tr class="thead-light">
+			<th><%= {j:"方面", e:"Direction", c:"方向", k:"방향"}[lang] %></th>
+			<td><%= myTrip.upbound ? {j:"上り", e:"Upbound", c:"上行", k:"상향"}[lang] : {j:"下り", e:"Downbound", c:"下行", k:"하향"}[lang] %></td>
+		</tr>
+		<tr class="thead-light">
+			<th><%= {j:"距離", e:"Distance", c:"距离", k:"거리"}[lang] %></th>
+			<td><%= myTrip.distance.toFixed(1) %> km</td>
+		</tr>
+	</table>
+</div>
+<div class="table-responsive">
+	<table class="table trip-table trip-table-lower">
+		<thead>
+			<tr class="thead-light">
+				<th></th>
+				<th class="text-left"><%= {j:"駅", e:"Station", c:"车站", k:"역"}[lang] %></th>
+				<th colspan="2"><%= {j:"到着 / 発車", e:"Arrives / Departs", c:"到达 / 发车", k:"도착 / 출발"}[lang] %></th>
+				<th><%= {j:"のりば", e:"Track", c:"月台", k:"플랫폼"}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<%
+				var from = (typeof req.query.from == "undefined") ? "" : req.query.from;
+				var to = (typeof req.query.to == "undefined") ? "" : req.query.to;
+				var highlight = false;
+			%>
+			<% for (var i = 0; i < myTrip.timetable.length; i++){ %>
+			<%
+				var myStation = myTrip.timetable[i];
+				if (myStation.stop == from) highlight = true;
+				var $url = "/timetable/station/" + myStation.stop;
+				if (myStation.code2 != "#"){
+			%>
+			<tr class="<%= highlight ? 'trip-table-highlight' : '' %>">
+				<td style="width: 10px;">
+					<a href="<%=$url%>">
+						<span class="station-icon-<%= myStation.stationCodeIcon.circle ? 'circle' : 'square' %> align-middle" style="border-color: <%= myStation.stationCodeIcon.color_border %>; background: linear-gradient(<%= myStation.stationCodeIcon.color_bg_darker %>, <%= myStation.stationCodeIcon.color_bg %>); color: <%= myStation.stationCodeIcon.color_text %>;"><small><%= myStation.code1 %></small><br/><%= myStation.code2 %></span>
+					</a>
+				</td>
+				<td class="text-left align-middle"><a href="<%=$url%>"><%= myStation.name[lang] %></a></div>
+				</td>
+				<% if (myStation.bypass || myStation.pass){ %>
+				<td colspan="2" class="align-middle">レ</td>
+				<% }else{
+					var arrive_txt = (myStation.arrive) ? myStation.arrive + " " + {j:"着", e:"arr.", c:"到", k:"도착"}[lang] : "";
+					var depart_txt = (myStation.depart) ? myStation.depart + " " + {j:"発", e:"dep.", c:"", k:"출발"}[lang] : "";
+				%>
+				<% 	if (arrive_txt == ""){ %>
+				<td colspan="2" class="align-middle"><div></div><strong><%= depart_txt %></strong></td>
+				<%	}else if (depart_txt == ""){ %>
+				<td colspan="2" class="align-middle"><%= arrive_txt %></td>
+				<% 	}else{ %>
+				<td class="align-middle"><%= arrive_txt %></td>
+				<td class="align-middle"><strong><%= depart_txt %></strong></td>
+				<% 	}
+				} %>
+				<td class="align-middle"><%= (myStation.arrive || myStation.depart) ? myStation.track : "" %></td>
+			</tr>
+			<%	
+				}
+				if (myStation.stop == to) highlight = false;
+			}
+			%>
+		</tbody>
+	</table>
+</div>
+
+<%
+}
+if (count == 1){
+	showTrip(req.params.trips);
+}else{
+	var trip1 = req.params.trips.split(",")[0];
+	var trip2 = req.params.trips.split(",")[1];
+	var trip1_from = trips[trip1].timetable[0].name;
+	var trip1_to = trips[trip1].timetable[trips[trip1].timetable.length - 1].name;
+	var trip2_from = trips[trip2].timetable[0].name;
+	var trip2_to = trips[trip2].timetable[trips[trip2].timetable.length - 1].name;
+%>
+<ul class="nav nav-tabs">
+	<li class="nav-item">
+		<a class="nav-link active" data-toggle="tab" href="#trip1"><%= trip1_from[lang] + " ⇒ " + trip1_to[lang] %></a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" data-toggle="tab" href="#trip2"><%= trip2_from[lang] + " ⇒ " + trip2_to[lang] %></a>
+	</li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane active container" id="trip1"><% showTrip(trip1); %></div>
+  <div class="tab-pane container" id="trip2"><% showTrip(trip2); %></div>
+</div>
+<% } %>
+
+<div class="sch-change"><%= sch_change[lang] %></div>
+
+<div class="text-center back-menu">
+	<a href = "javascript: window.history.back()" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

@@ -1,0 +1,244 @@
+<%
+	subtitle = {
+		j:"時刻表" + " - " + line.name.j,
+		e:" Timetable" + " - " + line.name.e,
+		c:"時刻表" + " - " + line.name.c,
+		k:"시간표" + " - " + line.name.k,
+	}
+%>
+<%- include('header'); %>
+
+<h2 id="top">
+	<span><%= line.name[lang] + {j:"時刻表", e:" Timetable", c:"時刻表", k:"시간표"}[lang] %></span>
+</h2>
+
+<% var nagivation_menu = function(num){ %>
+<p>
+	<%
+		var urlH = (isNaN(parseInt(req.params.hour))) ? "" : "/" + req.params.hour;
+	%>
+	<a href="/timetable/line/<%=req.params.line%>/<%=req.params.direction%>/WK<%=urlH%>" class="btn <%=(req.params.dayType=='WK')?'btn-wk':'btn-nonselected'%>"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><a href="/timetable/line/<%=req.params.line%>/<%=req.params.direction%>/PH<%=urlH%>" class="btn <%=(req.params.dayType=='PH')?'btn-ph':'btn-nonselected'%>"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+	<br/>
+	<%
+	var name1 = (req.params.direction=='UP')?line.this_direction_name[lang]:line.oppo_direction_name[lang];
+	var name2 = (req.params.direction=='DN')?line.this_direction_name[lang]:line.oppo_direction_name[lang];
+	var station1 = (req.params.direction=='UP')?line.this_direction:line.oppo_direction;
+	var station2 = (req.params.direction=='DN')?line.this_direction:line.oppo_direction;
+	%>
+	<% if (req.params.station != station1){ %><a href="/timetable/line/<%=req.params.line%>/UP/<%=req.params.dayType%><%=urlH%>" class="btn <%=(req.params.direction=='UP')?'btn-selected':'btn-nonselected'%>"><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= name1 %><%= {j:"方面 (上り)", e:" (up)", c:" (上行)", k:"으로 (상향)"}[lang] %></a><% } %>
+	<% if (req.params.station != station2){ %><a href="/timetable/line/<%=req.params.line%>/DN/<%=req.params.dayType%><%=urlH%>" class="btn <%=(req.params.direction=='DN')?'btn-selected':'btn-nonselected'%>"><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= name2 %><%= {j:"方面 (下り)", e:" (dn)", c:" (下行)", k:"으로 (하향)"}[lang] %></a><% } %>
+</p>
+
+<p>
+	<select class="custom-select hour_select" onchange="chooseHour(this.value)">
+		<option value="">-- <%= {j:"時間選択", e:"Select Time", c:"时段选择", k:"시간선택"}[lang] %> --</option>
+		<% for (var i in timeMenu){ %>
+		<option value="<%= timeMenu[i].value %>"><%= timeMenu[i].name[lang] + " " + (timeMenu[i].depart ? {j:"発", e:"dep.", c:"", k:"출발"}[lang] : {j:"着", e:"arr.", c:"到", k:"도착"}[lang]) + " " + timeMenu[i].label %></option>
+		<% } %>
+	</select>
+</p>
+
+<% } %>
+<% nagivation_menu() %>
+
+<% if (isNaN(parseInt(req.params.hour))){ %>
+
+	<div class="card station-list-div">
+		<div class="card-header station-list-subheader">
+			<%= {j:"時間選択", e:"Select Time", c:"时段选择", k:"시간선택"}[lang] %>
+		</div>
+		<div class="card-section">
+			<ul class="list-group list-group-flush station-list text-center">
+				<% for (var i in timeMenu){ %>
+				<li class="list-group-item">
+				<a href="/timetable/line/<%=req.params.line%>/<%=req.params.direction%>/<%=req.params.dayType%>/<%= timeMenu[i].value %>"><%= timeMenu[i].name[lang] + " " + (timeMenu[i].depart ? {j:"発", e:"dep.", c:"", k:"출발"}[lang] : {j:"着", e:"arr.", c:"到", k:"도착"}[lang]) + " " + timeMenu[i].label %></a>
+				</li>
+				<% } %>
+			</ul>
+		</div>
+	</div>
+
+<% }else{ %>
+
+	<div class="table-responsive">
+		<table class="table timetable-4l">
+			<thead class="thead-light">
+				<tr>
+					<th colspan="2"><%= {j:"列車番号", e:"Trip No.", c:"班次编号", k:"기차번호"}[lang] %></th>
+					<% for (var i in timetable){ %>
+					<th><%= timetable[i].tripNo %></th>
+					<% } %>
+					<th colspan="2"><%= {j:"列車番号", e:"Trip No.", c:"班次编号", k:"기차번호"}[lang] %></th>
+				</tr>
+				<tr>
+					<th colspan="2"><%= {j:"列車種別", e:"Train Type", c:"列车类別", k:"기차종별"}[lang] %></th>
+					<% for (var i in timetable){ %>
+					<th style="background: <%= timetable[i].trainType_color.bg %>; color: <%= timetable[i].trainType_color.text %>;"><%= timetable[i].trainType_name_short[lang] %></th>
+					<% } %>
+					<th colspan="2"><%= {j:"列車種別", e:"Train Type", c:"列车类別", k:"기차종별"}[lang] %></th>
+				</tr>
+				<tr>
+					<th colspan="2"></th>
+						<% for (var i in timetable){ %>
+						<th><a href="/timetable/trip/<%=timetable[i].tripNo%>/<%=req.params.dayType%>"><%= {j:"詳細", e:"Details", c:"详情", k:"세부"}[lang] %></a></th>
+						<% } %>
+					<th colspan="2"></th>
+				</tr>
+			</thead>
+			<%
+			var connectUp = function(timetable){
+				if(req.params.direction == "UP"){
+					for (var i = 0; i < timetable.length; i++){
+						if (typeof timetable[i] !== "undefined") if (timetable[i].arrive_ss == -1) return true;
+					}
+				}else{
+					for (var i = timetable.length-1; i >= 0; i--){
+						if (typeof timetable[i] !== "undefined") if (timetable[timetable.length-1].arrive_ss == -1) return true;
+					}
+				}
+				return false;
+			}
+			var connectDn = function(timetable){
+				if(req.params.direction == "UP"){
+					for (var i = timetable.length-1; i >= 0; i--){
+						if (typeof timetable[i] !== "undefined") if (timetable[timetable.length-1].depart_ss == -1) return true;
+					}
+				}else{
+					for (var i = 0; i < timetable.length; i++){
+						if (typeof timetable[i] !== "undefined") if (timetable[i].depart_ss == -1) return true;
+					}
+				}
+				return false;
+			}
+			%>
+			<tbody>
+				<tr class="timetable-4l-subhead">
+					<td colspan="2"></td>
+						<% for (var i in timetable){ %>
+						<td>
+						<% if(connectUp(timetable[i].timetable)){ %>
+							<a href="/timetable/trip/<%=timetable[i].tripNo%>/<%=req.params.dayType%>">↑<small><%= {j:"接続", e:"Cont.", c:"继续", k:"계속"}[lang] %></small></a>
+						<% } %>
+						</td>
+						<% } %>
+					<td colspan="2"></td>
+				</tr>
+				<%
+				var first = (req.params.direction == "UP") ? 0 : line.stations.length - 1;
+				var last = (req.params.direction == "UP") ? line.stations.length : -1;
+				var incr = (req.params.direction == "UP") ? 1 : -1;
+				var shown = []; for (var j in timetable) shown[j] = false;
+				%>
+				<% for (var i = first; i != last; i += incr){ %>
+				<tr>
+					<%
+						var showArrival = (line.stations[i].showArrival == true || i == last - incr);
+						var showDeparture = (i != last - incr);
+						var showBoth = showArrival && showDeparture;
+					%>
+					<td class="timetable-4l-subhead">
+						<a href="/timetable/station/<%=line.stations[i].id%>/<%=req.params.line%>/<%=req.params.direction%>/<%=req.params.dayType%>"><%= line.stations[i].name[lang] %></a>
+					</td>
+					<td class="timetable-4l-subhead">
+						<%= (showArrival) ? {j:"着", e:"arr.", c:"到", k:"도착"}[lang] : "" %><%- (showBoth ? "<br/>" : "") %><strong><%= (showDeparture) ? {j:"発", e:"dep.", c:"", k:"출발"}[lang] : "" %></strong>
+					</td>
+					<% for (var j in timetable){ %>
+						<% if (typeof timetable[j].timetable[i] === "undefined"){ %>
+						<td><%-
+							function(){
+								var showConnect = (!shown[j] && connectUp(timetable[j].timetable)) || (shown[j] && connectDn(timetable[j].timetable));
+								var strConnect = (showConnect ? "||" : ":");
+								return "<small>" + strConnect + (showBoth ? "<br/>" + strConnect : "") + "</small>";
+							}();
+						%></td>
+						<% }else{
+							shown[j] = true;
+							var v = function(value){
+								if (typeof value === "undefined") return "";
+								else return value;
+							}
+							var arrive = v(timetable[j].timetable[i].arrive);
+							var depart = v(timetable[j].timetable[i].depart);
+							var pass = v(timetable[j].timetable[i].pass);
+							var showConnect = (!shown[j] && connectUp(timetable[j].timetable)) || (shown[j] && connectDn(timetable[j].timetable));
+							var strConnect = "<small>" + (showConnect ? "||" : ":") + "</small>";
+							if (pass){
+								var myString = "レ" + (showBoth ? "<br/>" + "レ" : "");
+							}else if (!showDeparture){
+								//Case 1: show Arrival only
+								var myString = arrive;
+							}else if (!showArrival){
+								//Case 2: Show Departure only
+								if (depart == "") var myString = arrive;
+								else var myString = "<strong>" + depart + "</strong>";
+							}else{
+								//Case 3: Show both
+								var myString = (arrive == "" ? strConnect : arrive) + "<br/><strong>" + (depart == "" ? strConnect : depart) + "</strong>";
+							}
+						%>
+						<td><%- myString %></td>
+						<% } %>
+					<% } %>
+					<td class="timetable-4l-subhead">
+						<%= (showArrival) ? {j:"着", e:"arr.", c:"到", k:"도착"}[lang] : "" %><%- (showBoth ? "<br/>" : "") %><strong><%= (showDeparture) ? {j:"発", e:"dep.", c:"", k:"출발"}[lang] : "" %></strong>
+					</td>
+					<td class="timetable-4l-subhead">
+						<a href="/timetable/station/<%=line.stations[i].id%>/<%=req.params.line%>/<%=req.params.direction%>/<%=req.params.dayType%>"><%= line.stations[i].name[lang] %></a>
+					</td>
+				</tr>
+				<% } %>
+				<tr class="timetable-4l-subhead">
+					<td colspan="2"></td>
+						<% for (var i in timetable){ %>
+						<td>
+						<% if(connectDn(timetable[i].timetable)){ %>
+							<a href="/timetable/trip/<%=timetable[i].tripNo%>/<%=req.params.dayType%>">↓<small><%= {j:"接続", e:"Cont.", c:"继续", k:"계속"}[lang] %></small></a>
+						<% } %>
+						</td>
+						<% } %>
+					<td colspan="2"></td>
+				</tr>
+			</tbody>
+
+			<thead class="thead-light">
+				<tr>
+					<th colspan="2"></th>
+						<% for (var i in timetable){ %>
+						<th><a href="/timetable/trip/<%=timetable[i].tripNo%>/<%=req.params.dayType%>"><%= {j:"詳細", e:"Details", c:"详情", k:"세부"}[lang] %></a></th>
+						<% } %>
+					<th colspan="2"></th>
+				</tr>
+				<tr>
+					<th colspan="2"><%= {j:"列車種別", e:"Train Type", c:"列车类別", k:"기차종별"}[lang] %></th>
+					<% for (var i in timetable){ %>
+					<th style="background: <%= timetable[i].trainType_color.bg %>; color: <%= timetable[i].trainType_color.text %>;"><%= timetable[i].trainType_name_short[lang] %></th>
+					<% } %>
+					<th colspan="2"><%= {j:"列車種別", e:"Train Type", c:"列车类別", k:"기차종별"}[lang] %></th>
+				</tr>
+				<tr>
+					<th colspan="2"><%= {j:"列車番号", e:"Trip No.", c:"班次编号", k:"기차번호"}[lang] %></th>
+					<% for (var i in timetable){ %>
+					<th><%= timetable[i].tripNo %></th>
+					<% } %>
+					<th colspan="2"><%= {j:"列車番号", e:"Trip No.", c:"班次编号", k:"기차번호"}[lang] %></th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+
+<% nagivation_menu() %>
+
+<% } %>
+
+<div class="text-center back-menu">
+	<a href = "/timetable" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<script language="javascript">
+	var chooseHour = function (hour){
+		window.location.href = "/timetable/line/<%=req.params.line%>/<%=req.params.direction%>/<%=req.params.dayType%>/" + hour;
+	}
+	$(".hour_select").val("<%=req.params.hour%>");
+</script>
+
+<%- include('footer'); %>

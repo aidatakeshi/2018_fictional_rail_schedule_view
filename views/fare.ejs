@@ -1,0 +1,120 @@
+<% subtitle = {j:"運賃案内", e:"Info for Fares", c:"票价资讯", k:"운임정보"} %>
+<%- include('header'); %>
+
+<h2><%= {j:"運賃案内", e:"Info for Fares", c:"票价资讯", k:"운임정보"}[lang] %></h2>
+
+<h4><%= {j:"乗車券", e:"Fare:", c:"乘车券", k:"승차권"}[lang] %></h4>
+
+<%
+	var $unit =  {j:"円", e:" yen", c:"圆", k:"엔"}[lang];
+	var mileage = function(a,b){
+		if (typeof b == "undefined"){
+			return (a.minMileage + 0.1).toFixed(1) + " km +";
+		}
+		return (a.minMileage + 0.1).toFixed(1) + " ~ " + b.minMileage.toFixed(1) + " km";
+	};
+%>
+
+<div class="table-responsive">
+	<table class="table fare-table">
+		<thead>
+			<tr class="thead-light">
+				<th rowspan="2"><%= {j:"キロ程", e:"Distance", c:"距离", k:"거리"}[lang] %></th>
+				<th colspan="3"><%= {j:"一般：", e:"Standard: ", c:"一般：", k:"일반 :"}[lang] %></th>
+				<th colspan="2"><%= {j:"子供：", e:"Child: ", c:"小童：", k:"아이 :"}[lang] %></th>
+			</tr>
+			<tr class="thead-light">
+				<th><del><%= {j: "法定", e: "Statutory", c: "法定", k : "법정"}[lang] %></del></th>
+				<th><%= {j: "ICカード", e: "IC Card", c: "IC卡", k : "IC 카드"}[lang] %></th>
+				<th><%= {j: "切符", e: "Single Ticket", c: "单程票", k : "편도티켓"}[lang] %></th>
+				<th><%= {j: "ICカード", e: "IC Card", c: "IC卡", k : "IC 카드"}[lang] %></th>
+				<th><%= {j: "切符", e: "Single Ticket", c: "单程票", k : "편도티켓"}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for (var i = 0; i < fares.fareBasis.default.length; i++){ %>
+			<tr>
+				<td><%= mileage(fares.fareBasis.default[i], fares.fareBasis.default[i+1]) %></td>
+				<td><del><%= fares.fareBasis.default[i].fare.IC.normal * 2 + $unit %></del></td>
+				<td><%= fares.fareBasis.default[i].fare.IC.normal + $unit %></td>
+				<td><%= fares.fareBasis.default[i].fare.ticket.normal + $unit %></td>
+				<td><%= fares.fareBasis.default[i].fare.IC.discount + $unit %></td>
+				<td><%= fares.fareBasis.default[i].fare.ticket.discount + $unit %></td>
+			</tr>
+			<% } %>
+		</tbody>
+	</table>
+</div>
+
+<h4><%= {j:"特別車料金：", e: "Special Car fee: ", c: "特别车附加费：", k: "특수차요금："}[lang] %></h4>
+
+<div class="table-responsive">
+	<table class="table fare-table">
+		<thead>
+			<tr class="thead-light">
+				<th><%= {j:"キロ程", e:"Distance", c:"距离", k:"거리"}[lang] %></th>
+				<th><%= {j:"一般", e:"Standard:", c:"一般", k:"일반 "}[lang] %></th>
+				<th><%= {j:"子供", e:"Child:", c:"小童", k:"아이 "}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for (var i = 0; i < fares.premiumFee.reserved.length; i++){ %>
+			<tr>
+				<td><%= mileage(fares.premiumFee.reserved[i], fares.premiumFee.reserved[i+1]) %></td>
+				<td><%= fares.premiumFee.reserved[i].fee.normal + $unit %></td>
+				<td><%= fares.premiumFee.reserved[i].fee.discount + $unit %></td>
+			</tr>
+			<% } %>
+		</tbody>
+	</table>
+</div>
+
+<h4><%= {j:"ライナー料金", e:"Liner Fee", c:"Liner附加费", k:"라이너요금"}[lang] %></h4>
+
+<div class="table-responsive">
+	<table class="table fare-table">
+		<thead>
+			<tr class="thead-light">
+				<th><%= {j:"キロ程", e:"Distance", c:"距离", k:"거리"}[lang] %></th>
+				<th><%= {j:"一般", e:"Standard:", c:"一般", k:"일반 "}[lang] %></th>
+				<th><%= {j:"子供", e:"Child:", c:"小童", k:"아이 "}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for (var i = 0; i < fares.premiumFee.liner.length; i++){ %>
+			<tr>
+				<td><%= mileage(fares.premiumFee.liner[i], fares.premiumFee.liner[i+1]) %></td>
+				<td><%= fares.premiumFee.liner[i].fee.normal + $unit %></td>
+				<td><%= fares.premiumFee.liner[i].fee.discount + $unit %></td>
+			</tr>
+			<% } %>
+		</tbody>
+	</table>
+</div>
+
+<h4><%= {j:"加算運賃", e:"Surcharge", c:"额外收费", k:"부과요금"}[lang] %></h4>
+
+<div class="table-responsive">
+	<table class="table fare-table">
+		<thead>
+			<tr class="thead-light">
+				<th><%= {j:"加算運賃", e:"Surcharge", c:"额外收费", k:"부과요금"}[lang] %></th>
+				<th><del><%= {j: "法定", e: "Statutory", c: "法定", k : "법정"}[lang] %></del></th>
+				<th><%= {j:"一般", e:"Standard:", c:"一般", k:"일반 "}[lang] %></th>
+				<th><%= {j:"子供", e:"Child:", c:"小童", k:"아이 "}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for (var i = 0; i < fares.surchargeText.length; i++){ %>
+			<tr>
+				<td><%= fares.surchargeText[i][lang] %></td>
+				<td><del><%= (fares.surchargeText[i].normal * 2) + $unit %></del></td>
+				<td><%= fares.surchargeText[i].normal + $unit %></td>
+				<td><%= fares.surchargeText[i].discount + $unit %></td>
+			</tr>
+			<% } %>
+		</tbody>
+	</table>
+</div>
+
+<%- include('footer'); %>

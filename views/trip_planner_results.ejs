@@ -1,0 +1,200 @@
+<% subtitle = {j:"ダイヤ検索 - 検索結果", e:"Trip Planner - Search Results", c:"乘车计划- 搜索结果", k:"타기계획 - 검색결과"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"検索結果", e:"Search Results", c:"搜索结果", k:"검색결과"}[lang] %></h2>
+
+<p class="trip-planner-result-head">
+	<span id = "upper">
+		<span class="station-icon-<%= from_stationCodeIcon.circle ? 'circle' : 'square' %> align-middle" style="border-color: <%= from_stationCodeIcon.color_border %>; background: linear-gradient(<%= from_stationCodeIcon.color_bg_darker %>, <%= from_stationCodeIcon.color_bg %>); color: <%= from_stationCodeIcon.color_text %>;"><small><%= from_code1 %></small><br/><%= from_code2 %></span>
+		<span><%= from_name[lang] %></span>
+		<span> ⇒ </span>
+		<span class="station-icon-<%= to_stationCodeIcon.circle ? 'circle' : 'square' %> align-middle" style="border-color: <%= to_stationCodeIcon.color_border %>; background: linear-gradient(<%= to_stationCodeIcon.color_bg_darker %>, <%= to_stationCodeIcon.color_bg %>); color: <%= to_stationCodeIcon.color_text %>;"><small><%= to_code1 %></small><br/><%= to_code2 %></span>
+		<span><%= to_name[lang] %></span>
+	</span>
+	<br/>
+	<span>
+		(
+		<%= (req.params.dayType == "WK") ? {j:"平日 (月~金) ", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五) ", k:"평일 (월 ~ 금) "}[lang] : {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %> / <%
+		if (req.params.TPType == "D" || req.params.TPType == "A"){
+			var h = req.params.h;
+			var m = req.params.m;
+			%><%= h + ":" + (m < 10 ? "0" : "") + m %> <%
+		} %>
+		<% if (req.params.TPType == "D"){ %><%= {j: "出発", e: "Depart", c: "出发", k : "출발"}[lang] %><%
+			}else if (req.params.TPType == "A"){ %><%= {j: "到着", e: "Arrive", c: "到达", k : "도착"}[lang] %><%
+			}else if (req.params.TPType == "F"){ %><%= {j: "始発", e: "First Train", c: "头班车", k : "첫번째셔틀"}[lang] %><%
+			}else if (req.params.TPType == "L"){ %><%= {j: "終電", e: "Last Train", c: "尾班车", k : "꼬리셔틀"}[lang] %><%
+		} %>
+		)
+	</span>
+</p>
+
+<%
+var hourAndMins = function(m){
+	var h = Math.floor(m / 60);
+	var m = m % 60;
+	var str = "";
+	if (h > 0){
+		str += h + {j: "時間", e: " hr ", c: "小时", k : "시간"}[lang]
+	}
+	str += m + {j: "分", e: " min", c: "分", k : "분"}[lang]
+	return str;
+}
+
+var mins = function(m){
+	return m + {j: "分", e: " min", c: "分", k : "분"}[lang];
+}
+%>
+
+<% if (result.length == 0){ %>
+<div class="text-center">
+	<%= {j: "検索結果はありません。", e: "Sorry, there are no search results.", c: "抱歉，没有搜寻结果。", k: "죄송합니다. 검색 결과가 없습니다."}[lang] %>
+</div>
+<% } %>
+
+<% var count = 1; %>
+<% for (var i = 0; i < result.length ; i++){ %>
+
+<div class="card trip-planner-result-card">
+	<div class="card-header">
+		<%= {j:"検索結果", e:"Search Results", c:"搜索结果", k:"검색결과"}[lang] %> #<%= count++ %>
+	</div>
+	<div class="card-body">
+
+		<div class="table-responsive">
+			<table class="table trip-planner-result-table trip-planner-result-table-upper">
+				<tbody>
+				<tr class="thead-light">
+					<th><span class="nowrap"><%= {j:"所要時間", e:"Time Required", c:"所要时间", k:"소요시간"}[lang] %></span></th>
+					<td>
+						<%= hourAndMins(result[i].timeSpent_mins) %>
+						<small style="white-space: nowrap">
+							(<%= {j:"乗車：", e:"Traveling: ", c:"乘车：", k:"타기："}[lang] %><%= mins(result[i].timeSpentOnTrain_mins) %> / <%= {j:"その他：", e:"Others: ", c:"其他：", k:"다른："}[lang] %><%= mins(result[i].timeSpent_mins - result[i].timeSpentOnTrain_mins) %>)
+						</small>
+					</td>
+				</tr>
+				<tr class="thead-light">
+					<th><span class="nowrap"><%= {j:"乗車距離 / ", e:"Travel Distance / ", c:"乘车距离 / ", k:"여행거리 / "}[lang] %></span><span class="nowrap"><%= {j:"停車駅数", e:"No. of Stops", c:"停站数", k:"스테이션수"}[lang] %></span></th>
+					<td><%= result[i].distance.toFixed(1) %> km / <%= result[i].stops %><%= {j: "駅", e: " stops", c: "站", k: " 역"}[lang] %></td>
+				</tr>
+				<tr class="thead-light">
+					<th><span class="nowrap"><%= {j:"乗り換え回数", e:"No of Transfers", c:"换乘次数", k:"전송횟수"}[lang] %></span></th>
+					<td><%= result[i].transfers %><%= {j:"回", e:" time(s)", c:"次", k:"회"}[lang] %></td>
+				</tr>
+				<tr class="thead-light">
+					<th>
+						<span class="nowrap"><%= {j:"乗車料金", e:"Fare / Fees", c:"票价", k:"요금"}[lang] %></span>
+						<span class="nowrap">(<%= {IC: {j: "ICカード", e: "IC Card", c: "IC卡", k : "IC 카드"}, ticket: {j: "切符", e: "Single Ticket", c: "单程票", k : "편도티켓"}}[fareType][lang] %>)</span>
+					</th>
+					<td>
+						<%
+						var fare = result[i].basic_fare[fareType];
+						var liner = "";
+						for (var j in result[i].trips){
+							if (result[i].trips[j].liner_fee != null) liner = result[i].trips[j].liner_fee;
+						}
+						var $unit =  {j:"円", e:" yen", c:"圆", k:"엔"}[lang];
+						var getFareString = function(type){
+							if (liner == ""){
+								return fare[type] + $unit;
+							}else{
+								return (fare[type] + liner[type]) + $unit + ' <small style="white-space: nowrap">('
+								+ {j:"乗車券：", e:"Fare: ", c:"乘车券：", k:"승차권："}[lang]
+								+ fare[type] + $unit + " / "
+								+ {j:"ライナー：", e:"Liner: ", c:"Liner：", k:"라이너："}[lang]
+								+ liner[type] + $unit + ")</small>";
+							}
+						}
+						%>
+						<%- {j:"一般：", e:"Standard: ", c:"一般：", k:"일반 :"}[lang] + getFareString("normal") %>
+						<br/>
+						<%- {j:"子供：", e:"Child: ", c:"小童：", k:"아이 :"}[lang] + getFareString("discount") %>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="table-responsive">
+			<table class="table table-borderless trip-planner-result-table trip-planner-result-table-lower">
+			<% for (var j in result[i].trips){
+				var isFirst = (j == 0);
+				var isLast = (j == result[i].trips.length - 1);
+				var myTrip = result[i].trips[j];
+				var $depart = {j:"発", e:" dep.", c:"发", k:"출발"}[lang];
+				var $arrive = {j:"着", e:" arr.", c:"到", k:"도착"}[lang];
+				var $track = {j:"のりば", e:"Track", c:"月台", k:"플랫폼"}[lang];
+			%>
+			<tbody>
+			<tr class="trip-planner-station-bg">
+				<td class="text-right">
+					<% if (isFirst){ %>
+					<span class="nowrap"><strong><%= result[i].trips[j].board_hm + $depart %></strong></span> <span class="nowrap"><small><strong>(<%= $track + result[i].trips[j].from_track %>)</strong></small></span>
+					<% }else{ %>
+					<span class="nowrap"><%= result[i].trips[j-1].alight_hm + $arrive %></span> <span class="nowrap"><small>(<%= $track + result[i].trips[j-1].to_track %>)</small></span><br/><span class="nowrap"><%= result[i].trips[j].board_hm + $depart %></span> <span class="nowrap"><small>(<%= $track + result[i].trips[j].from_track %>)</small></span>
+					<% } %>
+				</td>
+				<td></td>
+				<td class="text-left">
+					<span class="nowrap">
+						<span class="station-icon-<%= myTrip.from_stationCodeIcon.circle ? 'circle' : 'square' %> align-middle" style="border-color: <%= myTrip.from_stationCodeIcon.color_border %>; background: linear-gradient(<%= myTrip.from_stationCodeIcon.color_bg_darker %>, <%= myTrip.from_stationCodeIcon.color_bg %>); color: <%= myTrip.from_stationCodeIcon.color_text %>;"><small><%= myTrip.from_code1 %></small><br/><%= myTrip.from_code2 %></span>
+						<% if (isFirst){ %>
+						<strong><%= myTrip.from_name[lang] %></strong>
+						<% }else{ %>
+						<%= myTrip.from_name[lang] %>
+						<% } %>
+					</span>
+				</td>
+			</tr>
+			<% $url = "/timetable/trip/" + myTrip.tripNo + "/" + req.params.dayType + "?from=" + myTrip.from + "&to=" + myTrip.to; %>
+			<tr class="trip-clickable" data-href="<%=$url%>">
+				<td class="text-right">
+						<span class="nowrap"><%= mins(Math.floor(myTrip.alight / 60) - Math.floor(myTrip.board / 60)) %></span> <span class="nowrap"><small>(<%= myTrip.distance.toFixed(1) %> km / <%= myTrip.stops %> <%= {j: "駅", e: " stops", c: "站", k: " 역"}[lang] %>)</small></span>
+				</td>
+				<td class="text-center" style="font-size: large;">⇓</td>
+				<td class="text-left">
+					<a href = "<%=$url%>">
+						<div class="trip-planner-train-type" style="background: <%= myTrip.trainType_color.bg %>; color: <%= myTrip.trainType_color.text %>;"><span class="nowrap"><%= myTrip.trainType_name[lang] %></span> <span class="nowrap"><small>(<%= {j: "", e: "for ", c: "往", k: ""}[lang] %><%= myTrip.train_dest_name[lang] %><%= {j: "行", e: "", c: "", k: " 행"}[lang] %>)</small></span></div>
+					</a>
+					<% if (myTrip.reserved_fee != null){ %>
+					<small><span class="nowrap">(<%= {j:"特別車料金：", e: "Special Car fee: ", c: "特别车附加费：", k: "특수차요금："}[lang] %></span>
+					<span class="nowrap"><%= myTrip.reserved_fee.normal + $unit %>)</span></small>
+					<% } %>
+				</td>
+			</tr>
+			<% if (isLast){ %>
+			<tr class="trip-planner-station-bg">
+				<td class="text-right trip-planner-width">
+					<span class="nowrap"><strong><%= result[i].trips[j].alight_hm + $arrive %></strong></span> <span class="nowrap"><small><strong>(<%= $track + result[i].trips[j].to_track %>)</strong></small></span>
+				</td>
+				<td></td>
+				<td class="text-left trip-planner-width">
+					<span class="nowrap">
+						<span class="station-icon-<%= myTrip.to_stationCodeIcon.circle ? 'circle' : 'square' %> align-middle" style="border-color: <%= myTrip.to_stationCodeIcon.color_border %>; background: linear-gradient(<%= myTrip.to_stationCodeIcon.color_bg_darker %>, <%= myTrip.to_stationCodeIcon.color_bg %>); color: <%= myTrip.to_stationCodeIcon.color_text %>;"><small><%= myTrip.to_code1 %></small><br/><%= myTrip.to_code2 %></span>
+						<strong><%= myTrip.to_name[lang] %></strong>
+					</span>
+				</td>
+			</tr>
+			<% } %>
+			<% } %>
+			</tbody>
+			</table>
+		</div>
+
+	</div>
+</div>
+<% } %>
+
+<script language="javascript">
+	$(".trip-clickable").click(function() {
+			window.location = $(this).data("href");
+		});
+</script>
+
+<div class="sch-change"><%= sch_change[lang] %></div>
+
+<div class="text-center back-menu">
+	<a href = "javascript: window.history.back()" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

@@ -1,0 +1,105 @@
+<% subtitle = {j:"列車時刻表", e:"Train Timetables", c:"列车時刻表", k:"기차일정"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"列車時刻表", e:"Train Timetables", c:"列车時刻表", k:"기차일정"}[lang] %></h2>
+
+<p>
+	<% for (var i in data){var myLine = data[i]; %>
+	<a href="#line-<%=myLine.id%>" class="btn btn-custom" style="background: linear-gradient(<%=myLine.color.bg %>, <%=myLine.color.bg_darker %>); color: <%=myLine.color.text %>"><%= myLine.name[lang] %></a>
+	<% } %>
+</p>
+
+<% for (var i in data){var myLine = data[i]; %>
+<div class="card station-list-div">
+	<style>
+		<% for (var myType in myLine.types_colors){
+			var myColor = myLine.types_colors[myType];
+			var border = (myColor.text == "#FFF" || myColor.text == "#000") ? myColor.bg : myColor.text;
+		%>
+		.tt-<%=myLine.id %>-<%=myType %> {border-color: <%= myColor.bg %>; background: <%= border %>;}<% }%>
+	</style>
+
+	<div class="card-header d-flex justify-content-between" style="background: linear-gradient(<%=myLine.color.bg %>, <%=myLine.color.bg_darker %>); color: <%=myLine.color.text %>" id="line-<%= myLine.id %>">
+		<div><%= myLine.name[lang] %></div>
+		<div><a href="#top" style="color: <%=myLine.color.text %>""><%= {j: "先頭", e: "Top", c: "页顶", k: "맨위로"}[lang] %>▴</a></div>
+	</div>
+
+	<div class="card-header station-list-subheader">
+		<%= {j: "路線時刻表", e: "Line Timetable", c: "路线时刻表", k: "노선시간표"}[lang] %>
+	</div>
+
+	<div class="card-section">
+		<ul class="list-group list-group-flush station-list">
+			<li class="list-group-item">
+				<div class="d-flex justify-content-between">
+					<div class="d-flex justify-content-start">
+						<span><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= myLine.stations[0].name[lang] %><%= {j:"方面 (下り)", e:" (dn)", c:" (下行)", k:"으로 (하향)"}[lang] %>:</span>
+					</div>
+					<div class="text-right">
+						<a href="/timetable/line/<%=myLine.id %>/DN/WK" class="btn btn-wk"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><span class="mobile-only"><br/></span><a href="/timetable/line/<%=myLine.id %>/DN/PH" class="btn btn-ph"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+					</div>
+				</div>
+			</li>
+			<li class="list-group-item">
+				<div class="d-flex justify-content-between">
+					<div class="d-flex justify-content-start">
+						<span><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= myLine.stations[myLine.stations.length-1].name[lang] %><%= {j:"方面 (上り)", e:" (up)", c:" (上行)", k:"으로 (상향)"}[lang] %>:</span>
+					</div>
+					<div class="text-right">
+						<a href="/timetable/line/<%=myLine.id %>/UP/WK" class="btn btn-wk"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><span class="mobile-only"><br/></span><a href="/timetable/line/<%=myLine.id %>/UP/PH" class="btn btn-ph"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>	
+
+	<div class="card-header station-list-subheader">
+		<%= {j: "駅時刻表", e: "Station Timetable", c: "车站时刻表", k: "역시간표"}[lang] %>
+	</div>
+
+	<div class="card-section">
+		<ul class="list-group list-group-flush station-list">
+
+		<%
+			for (var j in myLine.stations){
+				var myStation = myLine.stations[j];
+				if (myStation.code2 != "#"){
+		%>
+			<li class="list-group-item">
+				<a href="/timetable/station/<%= myStation.id %>">
+					<div class="d-flex justify-content-between">
+						<div class="d-flex justify-content-start">
+							<div>
+								<span class="station-icon-<%= myStation.stationCodeIcon.circle ? 'circle' : 'square' %> station-icon-margin align-middle" style="border-color: <%= myStation.stationCodeIcon.color_border %>; background: linear-gradient(<%= myStation.stationCodeIcon.color_bg_darker %>, <%= myStation.stationCodeIcon.color_bg %>); color: <%= myStation.stationCodeIcon.color_text %>;"><small><%= myStation.code1 %></small><br/><%= myStation.code2 %></span>
+							</div>
+							<div>
+								<span class="align-middle"><%= myStation.name[lang] %></span>
+							</div>
+						</div>
+						<div class="text-right">
+							<%
+								for (var k = 0; k < myStation.types_show.length; k++){
+									var myType = myLine.types[k];
+									if (myStation.types_show[k] == 1){
+										%><span class="train-type align-middle tt-<%=myLine.id %>-<%=myType %>"></span><%
+									}else if (myStation.types_show[k] == 2){
+										%><span class="train-type-2 align-middle tt-<%=myLine.id %>-<%=myType %>"></span><%
+									}
+								}
+							%>
+						</div>
+					</div>
+				</a>
+			</li>
+		<%
+				}
+			}
+		%>
+
+		</ul>
+	</div>
+
+</div>
+<% } %>
+
+<%- include('footer'); %>

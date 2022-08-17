@@ -1,0 +1,79 @@
+<%
+	subtitle = {
+		j:"終電案内" + " - " + to.name.j + "駅",
+		e:"Info for Last Trains" + " - " + to.name.e + " Station",
+		c:"末班车资讯" + " - " + to.name.c + "站",
+		k:"최후의열차" + " - " + to.name.k + "역",
+	}
+%>
+<%- include('header'); %>
+
+<h2 id="top">
+	<small><%= {j: "下車駅：", e: "To : ", c: "终点：", k : "끝점："}[lang] %></small>
+	<span class="station-icon-<%= to.stationCodeIcon.circle ? 'circle' : 'square' %>-big" style="border-color: <%= to.stationCodeIcon.color_border %>; background: linear-gradient(<%= to.stationCodeIcon.color_bg_darker %>, <%= to.stationCodeIcon.color_bg %>); color: <%= to.stationCodeIcon.color_text %>;"><small><%= to.code1 %></small><br/><%= to.code2 %></span>
+	<span><%= to.name[lang] + {j:"駅", e:" Station", c:"站", k:"역"}[lang] %></span>
+</h2>
+
+<%
+
+var hm = function(s){
+	var h = Math.floor(s / 3600) % 24;
+	var m = Math.floor(s / 60) % 60;
+	return h + ":" + (m < 10 ? "0" : "") + m;
+}
+
+%>
+
+<p><strong>(<%= (req.params.dayType == "WK") ? {j:"平日 (月~金) ", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五) ", k:"평일 (월 ~ 금) "}[lang] : {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %>)</strong></p>
+
+<p>
+	<% for (var line in lines){var myLine = lines[line]; %>
+	<a href="#line-<%=line%>" class="btn btn-custom" style="background: linear-gradient(<%=myLine.color.bg %>, <%=myLine.color.bg_darker %>); color: <%=myLine.color.text %>"><%= myLine.name[lang] %></a>
+	<% } %>
+</p>
+
+<div class="table-responsive">
+	<table class="table last-train-table">
+		<tbody>
+			<% for (var line in lines){ var myLine = lines[line]; %>
+			<tr id="line-<%= line %>">
+				<th colspan="5" style="background: linear-gradient(<%=myLine.color.bg %>, <%=myLine.color.bg_darker %>); color: <%=myLine.color.text %>">
+					<div class="d-flex justify-content-between">
+						<div><%= myLine.name[lang] %></div>
+						<div><a href="#top" style="color: <%=myLine.color.text %>""><%= {j: "先頭", e: "Top", c: "页顶", k: "맨위로"}[lang] %>▴</a></div>
+					</div>
+				</th>
+			</tr>
+			<tr class="thead-light last-train-table-subheader">
+				<th colspan="2"><%= {j: "乗車駅", e: "Boarding Station", c: "起点站", k : "출발점"}[lang] %></th>
+				<th><%= {j: "終電発車", e: "Departure of Last Train", c: "末班车发车时间", k : "최후의열차출발시간"}[lang] %></th>
+				<th><%= {j:"のりば", e:"Track", c:"月台", k:"플랫폼"}[lang] %></th>
+				<th></th>
+			</tr>
+			<% for (var i in myLine.stations){ var myStation = lastTrainFrom[myLine.stations[i].id]; %>
+			<% if (myStation != null && myStation.code2 != "#"){ %>
+			<tr>
+				<td style="width: 10px;">
+					<span class="station-icon-<%= myStation.stationCodeIcon.circle ? 'circle' : 'square' %> station-icon-margin align-middle" style="border-color: <%= myStation.stationCodeIcon.color_border %>; background: linear-gradient(<%= myStation.stationCodeIcon.color_bg_darker %>, <%= myStation.stationCodeIcon.color_bg %>); color: <%= myStation.stationCodeIcon.color_text %>;"><small><%= myStation.code1 %></small><br/><%= myStation.code2 %></span>
+				</td>
+				<td class="text-left align-middle"><%= myStation.name[lang] %></td>
+				<td class="align-middle"><%= hm(myStation.time) %></td>
+				<td class="align-middle"><%= myStation.track %></td>
+				<td class="align-middle">
+					<a class="btn btn-selected" href="/trip-planner/<%= req.params.dayType %>/<%= myLine.stations[i].id %>/<%= req.params.station %>/I/L">
+						<%= {j:"詳細", e:"Details", c:"详情", k:"세부정보"}[lang] %> %>
+					</a>
+				</td>
+			</tr>
+			<% } %>	
+			<% } %>	
+			<% } %>
+		</tbody>
+	</table>
+</div>
+
+<div class="text-center back-menu">
+	<a href = "/last-train" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

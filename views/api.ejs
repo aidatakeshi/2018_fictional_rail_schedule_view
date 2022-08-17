@@ -1,0 +1,194 @@
+<%- include('header'); %>
+
+	  <h3>APIs for Mugikyū Timetable</h3>
+
+	  <p>All APIs are returned in JSON format.</p>
+	  
+		<div class="table-responsive">
+			<table class="table small-text-table">
+			<thead class="thead-light">
+				<tr>
+					<th>URL</th><th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+						<td><span class="breakword">/api/lines_stations</span></td>
+						<td>
+							Returns the list of all lines and their stations.
+							<br/><strong>Queries:</strong>
+							<br/><strong>line-color</strong> : Non-null for returning colors for the lines
+							<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons
+							<br/><strong>train-type</strong> : Non-null for returning codes for train types stopping at each station
+							<br/><strong>train-type-color</strong> : Non-null for returning colors for train types stopping at each station
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/stations/:line</span></td>
+						<td>
+							Returns information of the line and the list of all stations on a line.
+							<br/><strong>Parameters:</strong>
+							<br/><strong>:line</strong> : Line code (e.g. "MK" for Mugikyū Main Line)
+							<br/><strong>Queries:</strong> (Same as above)
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/stations</span></td>
+						<td>
+							Returns the list of all distinct stations.
+							<br/><strong>Queries:</strong>
+							<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons
+							<br/><strong>tracks</strong> : Non-null for returning also track numbers
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/lines</span></td>
+						<td>
+							Returns the list of all lines only.
+							<br/><strong>Queries:</strong>
+							<br/><strong>line-color</strong> : Non-null for returning colors for the lines
+						</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/timetable/line/:line/:direction/:hour</span></td>
+					<td>
+						Returns the list of trains departing (or also arriving) at a particular direction on a line at a station. In the returned object, "WK" is for Weekdays Schedule, while "PH" is for Weekends & Holidays Schedule.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:station</strong> : Station code (e.g. "150" for Mugikyū-Aida)
+						<br/><strong>:line</strong> : Line code (e.g. "MK" for Mugikyū Main Line)
+						<br/><strong>:direction</strong> : "UP" for upbound (away from Kawada), "DN" for downbound (towards Kawada)
+						<br/><strong>:hour</strong> : Hour of reference time at "pivot station". Between 5 ~ 25. For trains with reference time earlier than 5:00, also considered as 5; for trains with reference time later than 25:59, also considered as 25.
+						<br/><strong>Queries:</strong>
+						<br/><strong>train-type-info</strong> : Non-null for returning names and colors for train types stopping at each station
+						<br/><strong>dest-name</strong> : Non-null for returning also station names of terminal stops for each train
+						<br/><strong>begin-name</strong> : Non-null for returning also station names of beginning stops for each train
+						<br/><strong>consist</strong> : Non-null for returning also consist information (e.g. train consists) for each train
+						<br/><strong>station-name</strong> : Non-null for returning also station names for each stations along the trip
+						<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for the station code icon
+					</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/timetable/line/:line/:direction/:dayType/:hour</span></td>
+					<td>
+						Similar as above, but shows only either the Weekdays Schedule or Weekends & Holidays Schedule.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:station, :line, :direction</strong> : (Same as above)
+						<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+						<br/><strong>Queries:</strong> (Same as above)
+					</td>
+				<tr>
+						<td><span class="breakword">/api/timetable/station/:station/:line/:direction</span></td>
+						<td>
+							Returns the list of trains departing (or also arriving) at a particular direction on a line at a station. In the returned object, "WK" is for Weekdays Schedule, while "PH" is for Weekends & Holidays Schedule.
+							<br/><strong>Parameters:</strong>
+							<br/><strong>:station</strong> : Station code (e.g. "150" for Mugikyū-Aida)
+							<br/><strong>:line</strong> : Line code (e.g. "MK" for Mugikyū Main Line)
+							<br/><strong>:direction</strong> : "UP" for upbound (away from Kawada), "DN" for downbound (towards Kawada)
+							<br/><strong>Queries:</strong>
+							<br/><strong>arrival</strong> : Non-null for returning also arrival-only trains (i.e. terminating at this station)
+							<br/><strong>train-type-info</strong> : Non-null for returning names and colors for train types stopping at each station
+							<br/><strong>dest-name</strong> : Non-null for returning also station names of terminal stops for each train
+							<br/><strong>begin-name</strong> : Non-null for returning also station names of beginning stops for each train
+							<br/><strong>consist</strong> : Non-null for returning also consist information (e.g. train consists) for each train
+							<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for the station code icon
+							<br/><strong>line-color</strong> : Non-null for returning colors for the line
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/timetable/station/:station/:line/:direction/:dayType</span></td>
+						<td>
+							Similar as above, but shows only either the Weekdays Schedule or Weekends & Holidays Schedule.
+							<br/><strong>Parameters:</strong>
+							<br/><strong>:station, :line, :direction</strong> : (Same as above)
+							<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+							<br/><strong>Queries:</strong> (Same as above)
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/timetable/trip/:tripNo/:dayType</span></td>
+						<td>
+							Returns the information for one train trip.
+							<br/><strong>Parameters:</strong>
+							<br/><strong>:tripNo</strong> : Trip No. (e.g. "06E06")
+							<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+							<br/><strong>Queries:</strong>
+							<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons
+							<br/><strong>station-name</strong> : Non-null for returning also station names for each stations along the trip
+							<br/><strong>hide-pass-stops</strong> : Non-null for showing only stations that the trip is stopping at
+							<br/><strong>line-info</strong> : Non-null for returning names and colors for the line
+						</td>
+				</tr>
+				<tr>
+						<td><span class="breakword">/api/timetable/trips/:tripNos/:dayType</span></td>
+						<td>
+							Returns the information for one train trip.
+							<br/><strong>Parameters:</strong>
+							<br/><strong>:tripNos</strong> : Trip No.s, separated in comma with no space (e.g. "06E06,06F06")
+							<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+							<br/><strong>Queries:</strong> (same as above)
+						</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/trip-planner/:dayType/:from/:to/:TPType<span style="color:grey">/:h/:m</span></span></td>
+					<td>
+						Returns the information for one train trip.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+						<br/><strong>:from</strong> : Station traveling from (e.g. "150" for Mugikyū-Aida)
+						<br/><strong>:to</strong> : Station traveling to (e.g. "101" for Mugikyū-Kawada)
+						<br/><strong>:h, :m</strong> : Hour and minutes for departure / arrival time (omit if
+						<br/><strong>:TPType</strong> : "D" for starting journey after time below, "A" for ending journey before time below, "F" for taking the first train, "L" for taking the last train
+						<br/><strong>:h, :m</strong> : Hour and minutes for departure / arrival time (omit if TPType = "F" or "L")
+						<br/><strong>Queries:</strong>
+						<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons for stations that board and alight for the trips
+						<br/><strong>station-name</strong> : Non-null for returning also names for the above-mentioned stations
+						<br/><strong>train-type-info</strong> : Non-null for returning names and colors of train types for each train taken
+						<br/><strong>train-destination</strong> : Non-null for returning the names of terminating stops for each train taken
+						<br/><strong>fares</strong> : Non-null for returning the information of fares. For basic fares, the information is seperated from trips, directly under each result; for premium fees, the information is attached into individual trips.
+					</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/last-train/:dayType/:station
+					<td>
+						Returns the last train information from all stops to a specified station.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+						<br/><strong>:station</strong> : Station traveling to (e.g. "150" for Mugikyū-Aida)
+						<br/><strong>Queries:</strong>
+						<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons
+						<br/><strong>station-name</strong> : Non-null for returning also names for the above-mentioned stations
+					</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/run-no/list
+					<td>
+						Returns the list of run numbers.
+					</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/run-no/list/:dayType
+					<td>
+						Returns the list of run numbers for a day type.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+					</td>
+				</tr>
+				<tr>
+					<td><span class="breakword">/api/run-no/run/:dayType/:runNo1/:runNo2
+					<td>
+						Returns the list of run numbers for a day type.
+						<br/><strong>Parameters:</strong>
+						<br/><strong>:dayType</strong> : "WK" for Weekdays Schedule, "PH" for Weekends & Holidays Schedule)
+						<br/><strong>:runNo1</strong> : Upbound run number, e.g. "199"
+						<br/><strong>:runNo2</strong> : Downbound run number, e.g. "200"
+						<br/><strong>Queries:</strong>
+						<br/><strong>station-code-icon</strong> : Non-null for returning also color and shape info for station code icons
+						<br/><strong>station-name</strong> : Non-null for returning also station names for each stations along the trip
+						<br/><strong>train-type-info</strong> : Non-null for returning names and colors for train types stopping at each station
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+
+<%- include('footer'); %>

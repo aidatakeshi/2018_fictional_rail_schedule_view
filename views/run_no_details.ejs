@@ -1,0 +1,86 @@
+<% subtitle = {j:"列車運用詳細", e:"Train Run Details", c:"列车运用详情", k:"열차신청세부"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"列車運用詳細", e:"Train Run Details", c:"列车运用详情", k:"열차신청세부"}[lang] %></h2>
+
+<p class="run-no-details-head">
+	<%= {j:"運用番号：", e:"Run Nos.: ", c:"运用编号：", k:"신청번호："}[lang] %><%= req.params.runNo1 + "/" + req.params.runNo2 %>
+	<br>
+	<%= {j:"ダイヤ：", e:"Schedule: ", c:"运行日：", k:"러닝데이："}[lang] %><%= (req.params.dayType == "WK") ? {j:"平日 (月 ~ 金曜日)", e:"Weekdays (Monday - Friday)", c:"平日 (周一至周五)", k:"평일 (월요일 ~ 금요일)"}[lang] : {j:"土曜日・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %>
+</p>
+
+<%
+var hourAndMins = function(m){
+	var h = Math.floor(m / 60);
+	var m = m % 60;
+	var str = "";
+	if (h > 0){
+		str += h + {j: "時間", e: " hr ", c: "小时", k : "시간"}[lang]
+	}
+	str += m + {j: "分", e: " min", c: "分", k : "분"}[lang]
+	return str;
+}
+%>
+
+<div class="table-responsive">
+	<table class="table run-no-details-table">
+		<thead>
+			<tr class="thead-light">
+				<th>#</th>
+				<th><%= {j:"番号", e:"Trip No.", c:"编号", k:"번호"}[lang] %></th>
+				<th><%= {j:"種別", e:"Type", c:"类別", k:"종별"}[lang] %></th>
+				<th colspan="5"><%= {j:"始点と終点", e:"Begin / Terminates", c:"起迄点", k:"시작과 끝 지점"}[lang] %></th>
+				<th><%= {j:"距離", e:"Distance", c:"距离", k:"거리"}[lang] %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<%
+				var cum_distance = 0;
+				var cum_time_ss = 0;
+			%>
+			<% for (var i in data){ %>
+			<%
+				var $url = "/timetable/trip/" + data[i].tripNo + "/" + req.params.dayType;
+				cum_distance += data[i].distance;
+				cum_time_ss += data[i].travelTime_ss;
+				var u = data[i].upbound;
+			%>
+			<tr class="clickable" data-href="<%=$url%>">
+				<td><a href="<%=$url%>">#<%= (i-0)+1 %></a></td>
+				<td><a href="<%=$url%>"><%= data[i].tripNo %></a></td>
+				<td style="background-color: <%= data[i].trainType_color.bg %>; color: <%= data[i].trainType_color.text %>"><%= data[i].trainType_name[lang] %></td>
+				<td><a href="<%=$url%>"><%= u ? data[i].beginStop_name[lang] : data[i].terminateStop_name[lang] %></a></td>
+				<td><a href="<%=$url%>"><%= u ? data[i].beginTime : data[i].terminateTime %></a></td>
+				<td><a href="<%=$url%>"><%= u ? "→" : "←" %></a></td>
+				<td><a href="<%=$url%>"><%= u ? data[i].terminateTime : data[i].beginTime %></a></td>
+				<td><a href="<%=$url%>"><%= u ? data[i].terminateStop_name[lang] : data[i].beginStop_name[lang] %></a></td>
+				<td><a href="<%=$url%>"><%= data[i].distance.toFixed(1) %> km</a></td>
+			</tr>
+			<% } %>
+		</tbody>
+		<tfoot>
+			<tr class="thead-light">
+				<th colspan="4"><%= {j:"合計営業走行距離", e:"Total Revenue Distance", c:"总营业运行距离", k:"총영업주행거리"}[lang] %></th>
+				<th colspan="5"><%= cum_distance.toFixed(1) %> km</th>
+			</tr>
+			<tr class="thead-light">
+				<th colspan="4"><%= {j:"合計営業走行時間", e:"Total Revenue Run Time", c:"总营业运行时间", k:"총영업주행시간"}[lang] %></th>
+				<th colspan="5"><%= hourAndMins(Math.round(cum_time_ss/60)) %></th>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+
+<script language="javascript">
+	$(".clickable").click(function() {
+		window.location = $(this).data("href");
+	});
+</script>
+
+<div class="sch-change"><%= sch_change[lang] %></div>
+
+<div class="text-center back-menu">
+	<a href = "javascript: window.history.back()" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

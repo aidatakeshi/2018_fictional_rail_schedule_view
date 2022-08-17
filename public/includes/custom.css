@@ -1,0 +1,578 @@
+/* Overall Body */
+body {
+	font-family: 'Noto Sans JP', sans-serif !important;
+	margin-bottom: 60px;
+}
+body > .container {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+/* Footer */
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/* Set the fixed height of the footer here */
+	height: 60px;
+	line-height: 60px; /* Vertically center the text there */
+	background-color: #f5f5f5;
+}
+  
+.footer > .container {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+/* Schedule Change */
+.sch-change {
+	padding: 1em;
+	font-size: small;
+	text-align: right;
+	font-style: italic;
+}
+@media (max-width: 800px){
+	.sch-change{
+		text-align: center;
+	}
+}
+
+/* Navigation Bar */
+.navbar-icon {
+	margin: 5px; width: 25px; height: 25px;
+}
+
+/* Index Page */
+.index-menu a, a:hover, a:active, a:visited {
+	color: white; text-decoration: none;
+}
+.index-menu a img {
+	max-width: 8em;
+}
+.index-menu a div {
+	margin-top: 1em;
+}
+
+/* Table Header */
+.card-header {
+	font-weight: bold;
+}
+
+/* Mobile Only Display */
+@media (min-width: 576px){
+	.mobile-only{
+		display: none;
+	}
+}
+
+/* API Tables*/
+.small-text-table th{
+	font-size: smaller;
+}
+.small-text-table td{
+	font-size: small;
+}
+.breakword {
+	word-break: break-all;
+}
+
+/* Back & Search Button */
+.back-menu{
+	text-align: center;
+	padding: 15px 0px;
+}
+.back-menu a{
+	padding: 5px 30px;
+}
+.search-menu{
+	text-align: center;
+	padding-top: 15px;
+}
+.search-menu button{
+	width: 80%;
+}
+
+/* Station Menu */
+.station-icon-square{
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 15%;
+	font-size: 12px;
+	line-height: 12px;
+	font-weight: bold;
+	text-align: center;
+}
+.station-icon-square-big{
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	border-style: solid;
+	border-width: 3px;
+	border-radius: 15%;
+	font-size: 18px;
+	line-height: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+.station-icon-circle{
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	border-style: solid;
+	border-width: 3px;
+	border-radius: 50%;
+	padding-top: 1px;
+	font-size: 12px;
+	line-height: 10px;
+	font-weight: bold;
+	text-align: center;
+}
+.station-icon-circle-big{
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	border-style: solid;
+	border-width: 4.5px;
+	border-radius: 50%;
+	padding-top: 2px;
+	font-size: 18px;
+	line-height: 15px;
+	font-weight: bold;
+	text-align: center;
+}
+.station-icon-margin{
+	margin-right: 13px;
+}
+.train-type{
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-style: solid;
+	border-width: 4px;
+	border-radius: 50%;
+	margin: 2px;
+}
+@media (max-width: 575.98px){
+	.train-type{
+		width: 8px;
+		height: 8px;
+		border-width: 3px;
+		margin: 1px;
+	}
+}
+.train-type-2{
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-style: solid;
+	border-width: 4px;
+	border-radius: 0%;
+	transform: scale(0.6,0.6) rotate(45deg);
+	margin: 2px;
+}
+@media (max-width: 575.98px){
+	.train-type-2{
+		width: 8px;
+		height: 8px;
+		border-width: 3x;
+		margin: 1px;
+	}
+}
+.btn-wk{
+	background-color: #2A9B50;
+	padding: 1px 5px !important;
+	margin: 1px 0px !important;
+	color: white !important;
+	text-decoration: none;
+}
+.btn-ph{
+	background-color: #BD1E48;
+	padding: 1px 5px !important;
+	margin: 1px 1px !important;
+	color: white !important;
+	text-decoration: none;
+}
+.btn-pdf{
+	background-color: rgb(64, 161, 206);
+	padding: 1px 5px !important;
+	margin: 1px 1px !important;
+	color: white !important;
+	text-decoration: none;
+}
+.btn-selected{
+	background-color: #333;
+	padding: 1px 5px !important;
+	margin: 1px 1px !important;
+	color: white !important;
+	text-decoration: none;
+}
+.btn-nonselected{
+	padding: 1px 5px !important;
+	margin: 1px 1px !important;
+	color: grey !important;
+	text-decoration: none;
+}
+.btn-custom{
+	padding: 1px 5px !important;
+	margin: 1px 1px !important;
+	text-decoration: none;
+}
+
+/* Station Lists */
+.station-list li{
+	padding: 0.3em;
+}
+.station-list li a{
+	color: black;
+}
+.station-list-ttlink{
+	padding: 0.3em;
+}
+.station-list-subheader{
+	padding: 0.3em;
+	background: linear-gradient(#333, #555);
+	color: white !important;
+	text-align: center;
+	white-space: nowrap;
+}
+.station-list-div{
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+/* Timetable Display */
+.timetable-table{
+	text-align: center;
+}
+.timetable-table thead tr th{
+	padding: 0.5em 0.3em;
+	white-space: nowrap;
+}
+.timetable-table tbody tr th{
+	padding: 0.3em 0.3em;
+	background: linear-gradient(#333, #555);
+	color: white !important;
+	white-space: nowrap;
+}
+.timetable-table tbody tr th a{
+	color: white !important;
+}
+.timetable-table tbody tr td{
+	padding: 0.3em;
+}
+@media (max-width: 575.98px){
+	.timetable-table thead{
+		font-size: small;
+	}
+	.timetable-table tbody tr th{
+		padding: 0.3em 0.3em;
+		font-size: small;
+	}
+	.timetable-table tbody tr td{
+		font-size: small;
+	}
+}
+.timetable-remark{
+	width: 24px;
+}
+@media (max-width: 575.98px){
+	.timetable-remark{
+		width: 18px;
+	}
+}
+
+/* Timetable New */
+
+.timetable2{
+	text-align: center;
+}
+.timetable2 .card-header{
+	padding: 0.3em 0.3em;
+	background: linear-gradient(#333, #555);
+	color: white !important;
+	white-space: nowrap;
+}
+.timetable2 .card-header a{
+	color: white !important;
+}
+.timetable2 .card-body {
+	text-align: left;
+	padding-top: 0.1em;
+	padding-bottom: 0.1em;
+}
+.timetable2-item {
+	text-align: center;
+	margin-top: 0.1em;
+	margin-bottom: 0.1em;
+	padding: 0.1em;
+}
+.timetable2-item .a {
+	font-size: 80%;
+}
+.timetable2-item .b {
+	font-size: 200%;
+	margin-top: -0.2em;
+	margin-bottom: -0.2em;
+}
+.timetable2-item .c {
+	font-size: 70%;
+}
+.timetable2-remark{
+	width: 20px;
+}
+@media (max-width: 800px){
+	.timetable2-item {
+		font-size: small;
+	}
+	.timetable2-remark{
+		width: 16px;
+	}
+}
+
+/* Timetable for Line */
+.timetable-4l{
+	font-size: 80%;
+}
+.timetable-4l th{
+	padding: 0.3em;
+	white-space: nowrap;
+	text-align: center;
+	vertical-align: middle !important;
+}
+.timetable-4l td{
+	padding: 0.3em;
+	white-space: nowrap;
+	text-align: center;
+	vertical-align: middle !important;
+}
+.timetable-4l a{
+	color: black !important;
+}
+.timetable-4l-subhead{
+	background-color: #eee;
+}
+
+@media (max-width: 575.98px){
+	.timetable-4l{
+		font-size: 60%;
+	}
+	.timetable-table th{
+		padding: 0.1em;
+	}
+	.timetable-table td{
+		padding: 0.1em;
+	}
+}
+
+/* Trip Table */
+.trip-table{
+	margin: 15px 0px;
+}
+.trip-table td{
+	text-align: center;
+}
+.trip-table-upper th{
+	text-align: center;
+	padding: 0.5em;
+	white-space: nowrap;
+}
+.trip-table-upper td{
+	padding: 0.5em;
+}
+.trip-table-lower{
+	max-width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+	white-space: nowrap;
+}
+.trip-table-lower th{
+	text-align: center;
+}
+.trip-table-lower td{
+	padding: 0.3em;
+}
+.trip-table-lower a{
+	color: black;
+}
+@media (max-width: 575.98px){
+	.trip-table{
+		font-size: smaller;
+	}
+}
+.trip-table-highlight{
+	background: rgb(255, 255, 153);
+	color: red;
+}
+.trip-table-highlight a{
+	color: red;
+}
+
+/* Trip Planner */
+.trip-planner-form-card{
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 768px;
+}
+.trip-planner-form-row{
+	padding: 3px 0px;
+}
+.trip-planner-result-head{
+	font-weight: bold;
+}
+.trip-planner-result-head #upper{
+	font-size: large;
+}
+.trip-planner-result-card{
+	margin-bottom: 10px;
+}
+.trip-planner-result-card .card-header{
+	background: linear-gradient(#333, #555);
+	color: white !important;
+}
+@media (max-width: 575.98px){
+	.trip-planner-result-table{
+		font-size: smaller;
+	}
+}
+.trip-planner-result-table-lower{
+	max-width: 576px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.trip-planner-result-table-lower td{
+	vertical-align: middle;
+}
+.trip-planner-train-type{
+	padding: 0.2em 0.5em;
+	margin-right: 0.3em;
+	border-radius: 0.2em;
+}
+@media (min-width: 576px){
+	.trip-planner-width{
+		width: 50%;
+	}
+}
+.trip-planner-station-bg{
+	background-color: rgb(240, 240, 240);
+}
+.nowrap{
+	white-space: nowrap;
+}
+
+/* Fare Table */
+.fare-table{
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 768px;
+	text-align: center;
+	white-space: nowrap;
+}
+.fare-table th{
+	padding: 0.3em 0.3em;
+}
+.fare-table td{
+	padding: 0.3em 0.3em;
+}
+@media (max-width: 575.98px){
+	.fare-table{
+		font-size: small;
+	}
+}
+
+/* Last Train Table */
+.last-train-table{
+	margin: 15px auto;
+	max-width: 576px;
+}
+.last-train-table th{
+	text-align: center;
+}
+.last-train-table td{
+	padding: 0.3em 0.3em;
+	text-align: center;
+	white-space: nowrap;
+}
+.last-train-table-subheader th{
+	padding: 0.3em 0.3em;
+	text-align: center;
+}
+.last-train-table div{
+	text-align: center;
+}
+@media (max-width: 575.98px){
+	.last-train-table td{
+		font-size: smaller;
+	}
+	.last-train-table-subheader{
+		font-size: smaller;
+	}
+}
+
+/* Run No */
+.run-no-list-card{
+	margin-bottom: 10px;
+}
+.run-no-list-card .card-header{
+	background: linear-gradient(#333, #555);
+	color: white !important;
+}
+.run-no-list-card .card-header a{
+	color: white !important;
+}
+.run-no-list-card td a{
+	color: black !important;
+}
+.run-no-list-table{
+	max-width: 576px;
+	margin: 0 auto;
+}
+.run-no-list-table th{
+	padding: 0.3em 0.3em;
+	text-align: center;
+	white-space: nowrap;
+}
+.run-no-list-table td{
+	padding: 0.2em 0.1em;
+	text-align: center;
+	white-space: nowrap;
+}
+.run-no-list-table a{
+	color: black !important;
+}
+@media (max-width: 575.98px){
+	.run-no-list-table{
+		font-size: small;
+	}
+}
+.run-no-details-table{
+	max-width: 576px;
+	margin: 0 auto;
+}
+.run-no-details-table th{
+	padding: 0.3em 0.3em;
+	text-align: center;
+	white-space: nowrap;
+}
+.run-no-details-table td{
+	padding: 0.3em 0.1em;
+	text-align: center;
+	white-space: nowrap;
+}
+.run-no-details-table a{
+	color: black !important;
+}
+@media (max-width: 575.98px){
+	.run-no-details-table{
+		font-size: small;
+	}
+}
+.run-no-details-head{
+	font-weight: bold;
+}

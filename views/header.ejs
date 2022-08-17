@@ -1,0 +1,60 @@
+<%
+	if(typeof req.cookies.lang == undefined){
+		lang = "j";
+	}else if (req.cookies.lang == null){
+		lang = "j";
+	}else{
+		lang = req.cookies.lang;
+	}
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">
+	<link rel="stylesheet" href="/lib/bootstrap.min.css">
+	<link rel="stylesheet" href="/includes/custom.css">
+	<script src="/lib/jquery-3.3.1.min.js"></script>
+	<script src="/lib/bootstrap.min.js"></script>
+	<script src="/lib/js.cookie.js"></script>
+	<title><%= {j:"麥急電鐵", e:"Mugikyū Railway", c:"麦急电铁", k:"밀급전철"}[lang] %><%= (typeof subtitle !== "undefined") ? " - " + subtitle[lang] : "" %></title>
+</head>
+<body>
+<header>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<a href="http://rapidtra.in"><img src="/img/mugikyu_logo.png" width="225" height="75" /></a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav ml-auto">
+				<li class="nav-item active"><a class="nav-link" href="/s">
+					<img src="/img/main_home.png" class="navbar-icon" />
+					<span><%= {j:"ホーム", e:"Home", c:"主頁", k:"홈페이지"}[lang] %></span>
+				</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/timetable">
+					<img src="/img/main_schedule_b.png" class="navbar-icon" />
+					<span><%= {j:"列車時刻表", e:"Train Timetables", c:"列车時刻表", k:"기차일정"}[lang] %></span>
+				</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/trip-planner">
+					<img src="/img/main_planner_b.png" class="navbar-icon" />
+					<span><%= {j:"ダイヤ検索", e:"Trip Planner", c:"乘车计划", k:"타기계획"}[lang] %></span>
+				</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/last-train">
+					<img src="/img/main_lasttrain_b.png" class="navbar-icon" />
+					<span><%= {j:"終電案内", e:"Info for Last Trains", c:"末班车资讯", k:"최후의열차"}[lang] %></span>
+				</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/fare">
+					<img src="/img/main_fare_b.png" class="navbar-icon" />
+					<span><%= {j:"運賃案内", e:"Info for Fares", c:"票价资讯", k:"운임정보"}[lang] %></span>
+				</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/run-no">
+					<img src="/img/main_run_b.png" class="navbar-icon" />
+					<span><%= {j:"列車運用", e:"Train Runs", c:"列车运用", k:"열차신청"}[lang] %></span>
+				</a></li>
+		</ul>
+	</div>
+</nav>
+</header>
+<main role="main" class="container">

@@ -1,0 +1,140 @@
+<%
+	subtitle = {
+		j:"時刻表" + " - " + station.name.j + "駅",
+		e:" Timetable" + " - " + station.name.e + " Station",
+		c:"時刻表" + " - " + station.name.c + "站",
+		k:"시간표" + " - " + station.name.k + "역",
+	}
+%>
+<%- include('header'); %>
+
+<h2 id="top">
+	<span class="station-icon-<%= station.stationCodeIcon.circle ? 'circle' : 'square' %>-big" style="border-color: <%= station.stationCodeIcon.color_border %>; background: linear-gradient(<%= station.stationCodeIcon.color_bg_darker %>, <%= station.stationCodeIcon.color_bg %>); color: <%= station.stationCodeIcon.color_text %>;"><small><%= station.code1 %></small><br/><%= station.code2 %></span>
+	<span><%= station.name[lang] + {j:"駅", e:" Station", c:"站", k:"역"}[lang] %></span>
+</h2>
+
+<% var nagivation_menu = function(){ %>
+<p>
+	<a href="/timetable/station/<%=req.params.station%>/<%=req.params.line%>/<%=req.params.direction%>/WK" class="btn <%=(req.params.dayType=='WK')?'btn-wk':'btn-nonselected'%>"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><a href="/timetable/station/<%=req.params.station%>/<%=req.params.line%>/<%=req.params.direction%>/PH" class="btn <%=(req.params.dayType=='PH')?'btn-ph':'btn-nonselected'%>"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+	<br/>
+	<%
+	var name1 = (req.params.direction=='UP')?line.this_direction_name[lang]:line.oppo_direction_name[lang];
+	var name2 = (req.params.direction=='DN')?line.this_direction_name[lang]:line.oppo_direction_name[lang];
+	var station1 = (req.params.direction=='UP')?line.this_direction:line.oppo_direction;
+	var station2 = (req.params.direction=='DN')?line.this_direction:line.oppo_direction;
+	%>
+	<% if (req.params.station != station1){ %><a href="/timetable/station/<%=req.params.station%>/<%=req.params.line%>/UP/<%=req.params.dayType%>" class="btn <%=(req.params.direction=='UP')?'btn-selected':'btn-nonselected'%>"><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= name1 %><%= {j:"方面 (上り)", e:" (up)", c:" (上行)", k:"으로 (상향)"}[lang] %></a><% } %>
+	<% if (req.params.station != station2){ %><a href="/timetable/station/<%=req.params.station%>/<%=req.params.line%>/DN/<%=req.params.dayType%>" class="btn <%=(req.params.direction=='DN')?'btn-selected':'btn-nonselected'%>"><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= name2 %><%= {j:"方面 (下り)", e:" (dn)", c:" (下行)", k:"으로 (하향)"}[lang] %></a><% } %>
+</p>
+<% } %>
+<% nagivation_menu() %>
+
+<%
+	var lastHour = -1;
+	var hours = [];
+	for (var i = 0 ; i < timetable.length; i++){
+		var myHour = Math.floor(timetable[i].depart_ss / 3600) % 24;
+		if (myHour != lastHour){
+			lastHour = myHour;
+			hours.push(myHour);
+		}
+	}
+%>
+
+<p>
+	<select class="custom-select" id="hour_select">
+		<option selected value="">-- <%= {j:"時間選択", e:"Select Time", c:"时段选择", k:"시간선택"}[lang] %> --</option>
+		<% for (var i in hours){ %>
+		<option value="<%= hours[i] %>"><%= hours[i] %>:00 ~ <%= hours[i] %>:59</option>
+		<% } %>
+	</select>
+</p>
+
+<script language="javascript">
+	$("#hour_select").change(function(){
+		var hour = 	$("#hour_select").val();
+		if (hour != ""){
+			window.location.href = "#hour-" + hour;
+			$("#hour_select").val("");
+		}
+	});
+</script>
+
+<% var lastHour = -1; var count; %>
+<div class="card timetable2">
+	<%
+	for (var i = 0 ; i < timetable.length; i++){
+		var myHour = Math.floor(timetable[i].depart_ss / 3600) % 24;
+		if (myHour != lastHour){
+			lastHour = myHour;
+			count = 1;
+	%>
+	<% if (i > 0){ %></div><% } %>
+	<div class="card-header" id="hour-<%= myHour %>">
+		<div class=" d-flex justify-content-between">
+			<div></div>
+			<div><%= myHour %>:00 ~ <%= myHour %>:59</div>
+			<div><a href="#top"><%= {j: "先頭", e: "Top", c: "页顶", k: "맨위로"}[lang] %>▴</a></div>
+		</div>
+	</div>
+	<div class="card-body row">
+	<%
+		}
+		var $count = count++;
+		var $depart = timetable[i].depart;
+		var $trainType = timetable[i].trainType_name_short[lang];
+		var $track = timetable[i].track;
+		var $dest = timetable[i].terminateStop_name_short[lang];
+		var $tripNo = timetable[i].tripNo;
+		var $remarks = "";
+		if (timetable[i].beginStop == station.id) $remarks += '<img src="/img/shihatsu.png" class="timetable2-remark" />';
+		if (timetable[i].consist.others.liner) $remarks += '<img src="/img/liner.png" class="timetable2-remark" />';
+		if (timetable[i].consist.others.reserved) $remarks += '<img src="/img/reserved.png" class="timetable2-remark" />';
+			//Check if combine-able
+		if (i < timetable.length - 1){
+			if (timetable[i].depart_ss == timetable[i+1].depart_ss && timetable[i].trainType == timetable[i+1].trainType){
+				var $dest_alt = timetable[i+1].terminateStop_name_short[lang];
+				var $tripNo_alt = timetable[i+1].tripNo;
+				if (timetable[i+1].tripNo > timetable[i].tripNo){
+					if ($dest_alt != $dest) $dest = "<small>" + $dest + "/" + $dest_alt + "</small>";
+					$tripNo = $tripNo + "," + $tripNo_alt;
+				}else{
+					if ($dest_alt != $dest) $dest = "<small>" + $dest_alt + "/" + $dest + "</small>";
+					$tripNo = $tripNo_alt + "," + $tripNo;
+				}
+				i++;
+			}
+		}
+		var $url = "/timetable/trip/" + $tripNo + "/" + req.params.dayType;
+		var $tcolor = timetable[i].trainType_color.text;
+	%>
+	<div data-href="<%=$url%>" class='col-xl-1 col-2 timetable2-item'>
+		<div style="background-color: <%= timetable[i].trainType_color.bg %>;">
+			<div class="a"><a href="<%=$url%>" style="color: <%=$tcolor %>;"><%= $trainType %></a></div>
+			<div class="b"><a href="<%=$url%>" style="color: <%=$tcolor %>;"><%= $depart.substr(-2) %></a></div>
+			<div class="c"><a href="<%=$url%>" style="color: <%=$tcolor %>;">[<%= $track %>]<%- $dest %></a></div>
+		</div>
+		<% if ($remarks != ""){ %><div>
+			<%- $remarks %>
+		</div><% } %>
+	</div>
+	<%
+	}
+	%>
+</div>
+
+<script language="javascript">
+	$(".timetable2-item").click(function() {
+        window.location = $(this).data("href");
+    });
+</script>
+
+<div class="sch-change"><%= sch_change[lang] %></div>
+
+<% nagivation_menu() %>
+
+<div class="text-center back-menu">
+	<a href = "/timetable/station/<%=req.params.station%>" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

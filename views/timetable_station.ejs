@@ -1,0 +1,55 @@
+<%
+subtitle = {
+	j:"列車時刻表" + " - " + station.name.j + "駅",
+	e:"Train Timetables" + " - " + station.name.e + "Station",
+	c:"列车時刻表" + " - " + station.name.c + "站",
+	k:"기차일정" + " - " + station.name.k + "역",
+}
+%>
+<%- include('header'); %>
+
+<h2>
+	<span class="station-icon-<%= station.stationCodeIcon.circle ? 'circle' : 'square' %>-big" style="border-color: <%= station.stationCodeIcon.color_border %>; background: linear-gradient(<%= station.stationCodeIcon.color_bg_darker %>, <%= station.stationCodeIcon.color_bg %>); color: <%= station.stationCodeIcon.color_text %>;"><small><%= station.code1 %></small><br/><%= station.code2 %></span>
+	<span><%= station.name[lang] + {j:"駅", e:" Station", c:"站", k:"역"}[lang] %></span>
+</h2>
+
+<div class="card">
+	<%
+	for (var i in data){
+		var myLine = data[i];
+		for (var j in myLine.stations){
+			if(myLine.stations[j].id == station.id){
+	%>
+	<div class="card-header" style="background: linear-gradient(<%=myLine.color.bg %>, <%=myLine.color.bg_darker %>); color: <%=myLine.color.text %>"><%= myLine.name[lang] %></div>
+	<% if (j > 0){ %>
+		<div class="card-body station-list-ttlink">
+			<div class="d-flex justify-content-between">
+				<div><span><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= myLine.stations[0].name[lang] %><%= {j:"方面 (下り)", e:" (dn)", c:" (下行)", k:"으로 (하향)"}[lang] %>:</span> <small><a href="/pdf/Timetable-<%=station.id %>-<%=myLine.id %>-DN.pdf" style="color: blue;">[PDF]</a></small></div>
+				<div class="text-right">
+					<a href="/timetable/station/<%=station.id %>/<%=myLine.id %>/DN/WK" class="btn btn-wk"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><span class="mobile-only"><br/></span><a href="/timetable/station/<%=station.id %>/<%=myLine.id %>/DN/PH" class="btn btn-ph"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+				</div>
+			</div>	
+		</div>
+	<% } %>
+	<% if (j < myLine.stations.length - 1){ %>
+		<div class="card-body station-list-ttlink">
+			<div class="d-flex justify-content-between">
+				<div><span><%= {j:"", e:"For ", c:"往", k:""}[lang] %><%= myLine.stations[myLine.stations.length-1].name[lang] %><%= {j:"方面 (上り)", e:" (up)", c:" (上行)", k:"으로 (상향)"}[lang] %>:</span> <small><a href="/pdf/Timetable-<%=station.id %>-<%=myLine.id %>-UP.pdf" style="color: blue;">[PDF]</a></small></div>
+				<div class="text-right">
+					<a href="/timetable/station/<%=station.id %>/<%=myLine.id %>/UP/WK" class="btn btn-wk"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></a><span class="mobile-only"><br/></span><a href="/timetable/station/<%=station.id %>/<%=myLine.id %>/UP/PH" class="btn btn-ph"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></a>
+				</div>
+			</div>
+		</div>
+	<% } %>
+	<%
+			}
+		}
+	}
+	%>
+</div>
+
+<div class="text-center back-menu">
+	<a href = "/timetable/" class="btn btn-secondary"><%= {j:"返回", e:"Back", c:"返回", k:"고벅"}[lang] %></a>
+</div>
+
+<%- include('footer'); %>

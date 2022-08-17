@@ -1,0 +1,119 @@
+<% subtitle = {j:"終電案内", e:"Info for Last Trains", c:"末班车资讯", k:"최후의열차"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"終電案内", e:"Info for Last Trains", c:"末班车资讯", k:"최후의열차"}[lang] %></h2>
+
+<%
+	var now = new Date();
+	var day = now.getDay();
+	if (day == 0 || day == 6){
+		var checked_ph = " checked";
+		var checked_wk = "";
+	}else{
+		var checked_wk = " checked";
+		var checked_ph = "";
+	}
+
+	var lineList = function(){
+		for (var i in data){
+			var myLine = data[i];
+			%>
+			<option value="<%= myLine.id %>"><%= myLine.name[lang] %></option><%
+		}
+	}
+
+	var stations = {};
+	for (var i in data){
+		var myLine = data[i];
+		stations[myLine.id] = [];
+		for (var j in myLine.stations){
+			var myStation = myLine.stations[j];
+			if (myStation.code2 != "#"){
+				stations[myLine.id].push({id: myStation.id, text: "[" + myStation.code + "] " + myStation.name[lang]});
+			}
+		}
+	}
+	var stationList = function(){
+		for (var i in data){
+			var myLine = data[i];
+			%>
+				<option disabled><%= myLine.name[lang] %></option><%
+			for (var j in myLine.stations){
+				var myStation = myLine.stations[j];
+				if (myStation.code2 != "#"){
+				%>
+				<option value="<%= myStation.id %>">[<%= myStation.code %>] <%= myStation.name[lang] %></option><%
+				}
+			}
+		}
+	}
+%>
+
+<div class="card trip-planner-form-card">
+	<div class="card-body">
+		<div class="row trip-planner-form-row">
+				<div class="col-sm-3"><%= {j: "下車駅：", e: "To : ", c: "终点：", k : "끝점："}[lang] %></div>
+				<div class="col-sm-9">
+					<select class="custom-select" id="to_line_select" onchange="to_line_changed()">
+						<option selected value="">-- <%= {j:"路線選択", e:"Select Line", c:"路线", k:"노선선택"}[lang] %> --</option>
+						<% lineList() %>
+					</select>
+					<select class="custom-select" id="to_select" onchange="to_sta_changed()">
+					</select>
+					<input type="text" id="to_dummy" hidden />
+				</div>
+			</div>
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "ダイヤ：", e: "Schedule : ", c: "时刻表：", k : "시간표："}[lang] %></div>
+			<div class="col-sm-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="dayType_WK" name="dayType" value="WK"<%= checked_wk %>>
+					<label class="form-check-label" for="dayType_WK"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="dayType_PH" name="dayType" value="PH"<%= checked_ph %>>
+					<label class="form-check-label" for="dayType_PH"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></label>
+				</div>
+			</div>
+		</div>
+		<div class="search-menu">
+			<button type="button" class="btn btn-secondary" onclick="form_submit()"><%= {j:"検索", e:"Search", c:"搜索", k:"수색"}[lang] %></button>
+		</div>
+	</div>
+</div>
+
+<script language="javascript">
+
+	var stations = JSON.parse('<%- JSON.stringify(stations).replace("\'", "\\\'") %>');
+
+	function to_sta_changed(){
+		$("#to_dummy").val($("#to_select").val());
+	}
+
+	function to_line_changed(){
+		var line = $("#to_line_select").val();
+		$('#to_select').find('option').remove();
+		if (line != ""){
+			$('#to_select').append('<option selected value="">-- <%= {j:"下車駅選択", e:"Select Station", c:"终点选择", k:"끝점선택"}[lang] %> --</option>');
+			for (var i in stations[line]){
+				$('#to_select').append('<option selected value="' + stations[line][i].id + '">' + stations[line][i].text + '</option>');
+			}
+		}
+		$('#to_select').val("");
+	}
+	
+	function form_submit(){
+		var dayType = $("#dayType_WK").is(':checked') ? "WK" : "PH";
+		if ($("#to_select").val() == "" || $("#to_select").val() == null){
+		} else{
+			var url = "/last-train/" + dayType + "/" + $("#to_select").val();
+			window.location.pathname = url;
+		}
+	}
+	
+	to_line_changed();
+	$("#to_select").val($("#to_dummy").val());
+
+</script>
+
+<%- include('footer'); %>

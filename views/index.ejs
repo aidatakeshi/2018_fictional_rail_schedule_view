@@ -1,0 +1,37 @@
+<% delete subtitle %>
+<%- include('header'); %>
+<div class="mt-2 col-md-12"></div>
+<div class="row" style="text-align:center;">
+	<div class="card col-sm-6 col-md-4 col-lg 2" style="background-color: #2A9B50;"><div class="card-body index-menu">
+		<a href="/timetable/" class="main">
+			<img src="/img/main_schedule.png" class="img-fluid" />
+			<div><%= {j:"列車時刻表", e:"Train Timetables", c:"列车時刻表", k:"기차일정"}[lang] %></div>
+		</a>
+	</div></div>
+	<div class="card col-sm-6 col-md-4 col-lg 2" style="background-color: #815A2B;"><div class="card-body index-menu">
+		<a href="/trip-planner/">
+			<img src="/img/main_planner.png" class="img-fluid" />
+			<div><%= {j:"ダイヤ検索", e:"Trip Planner", c:"乘车计划", k:"타기계획"}[lang] %></div>
+		</a>
+	</div></div>
+	<div class="card col-sm-6 col-md-4 col-lg 2" style="background-color: #00152D;"><div class="card-body index-menu">
+		<a href="/last-train/">
+			<img src="/img/main_lasttrain.png" class="img-fluid" />
+			<div><%= {j:"終電案内", e:"Info for Last Trains", c:"末班车资讯", k:"최후의열차"}[lang] %></div>
+		</a>
+	</div></div>
+	<div class="card col-sm-6 col-md-4 col-lg 2" style="background-color: #BF1E33;"><div class="card-body index-menu">
+		<a href="/fare/">
+			<img src="/img/main_fare.png" class="img-fluid" />
+			<div><%= {j:"運賃案内", e:"Info for Fares", c:"票价资讯", k:"운임정보"}[lang] %></div>
+		</a>
+	</div></div>
+	<div class="card col-sm-6 col-md-4 col-lg 2" style="background-color: rgb(99, 74, 74);"><div class="card-body index-menu">
+		<a href="/run-no/">
+			<img src="/img/main_run.png" class="img-fluid" />
+			<div><%= {j:"列車運用", e:"Train Runs", c:"列车运用", k:"열차신청"}[lang] %></div>
+		</a>
+	</div></div>
+</div>
+
+<%- include('footer'); %>

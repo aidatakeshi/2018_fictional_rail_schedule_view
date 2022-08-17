@@ -1,0 +1,248 @@
+<% subtitle = {j:"ダイヤ検索", e:"Trip Planner", c:"乘车计划", k:"타기계획"} %>
+<%- include('header'); %>
+
+<h2 id="top"><%= {j:"ダイヤ検索", e:"Trip Planner", c:"乘车计划", k:"타기계획"}[lang] %></h2>
+
+<%
+
+	var now = new Date();
+	var day = now.getDay();
+	var hour = now.getHours();
+	var min = now.getMinutes();
+	if (hour < 2){
+		day = (day + 6) % 7;
+		hour += 24;
+	}
+	else if (hour < 4) hour = 4;
+	if (day == 0 || day == 6){
+		var checked_ph = " checked";
+		var checked_wk = "";
+	}else{
+		var checked_wk = " checked";
+		var checked_ph = "";
+	}
+
+	var $h = function(h){
+		if (hour == h) return " selected";
+		return "";
+	}
+	var $m = function(m){
+		if (min == m) return " selected";
+		return "";
+	}
+
+%>
+
+<div class="card trip-planner-form-card">
+	<div class="card-body">
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "利用運賃：", e: "Fare Type : ", c: "票价类型：", k : "티켓유형："}[lang] %></div>
+			<div class="col-sm-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="fareType_IC" name="fareType" value="IC" checked>
+					<label class="form-check-label" for="fareType_IC"><%= {j: "ICカード", e: "IC Card", c: "IC卡", k : "IC 카드"}[lang] %></label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="fareType_ticket" name="fareType" value="ticket">
+					<label class="form-check-label" for="fareType_ticket"><%= {j: "切符", e: "Single Ticket", c: "单程票", k : "편도티켓"}[lang] %></label>
+				</div>
+			</div>
+		</div>
+
+		<%
+		var lineList = function(){
+			for (var i in data){
+				var myLine = data[i];
+				%>
+				<option value="<%= myLine.id %>"><%= myLine.name[lang] %></option><%
+			}
+		}
+
+		var stations = {};
+		for (var i in data){
+			var myLine = data[i];
+			stations[myLine.id] = [];
+			for (var j in myLine.stations){
+				var myStation = myLine.stations[j];
+				if (myStation.code2 != "#"){
+					stations[myLine.id].push({id: myStation.id, text: "[" + myStation.code + "] " + myStation.name[lang]});
+				}
+			}
+		}
+		var stationList = function(){
+			for (var i in data){
+				var myLine = data[i];
+				%>
+					<option disabled><%= myLine.name[lang] %></option><%
+				for (var j in myLine.stations){
+					var myStation = myLine.stations[j];
+					if (myStation.code2 != "#"){
+					%>
+					<option value="<%= myStation.id %>">[<%= myStation.code %>] <%= myStation.name[lang] %></option><%
+					}
+				}
+			}
+		}
+		%>
+
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "乗車駅：", e: "From : ", c: "起点：", k : "출발점："}[lang] %></div>
+			<div class="col-sm-9">
+				<select class="custom-select" id="from_line_select" onchange="from_line_changed()">
+					<option selected value="">-- <%= {j:"路線選択", e:"Select Line", c:"路线", k:"노선선택"}[lang] %> --</option>
+					<% lineList() %>
+				</select>
+				<select class="custom-select" id="from_select" onchange="from_sta_changed()">
+				</select>
+				<input type="text" id="from_dummy" hidden />
+			</div>
+		</div>
+
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "下車駅：", e: "To : ", c: "终点：", k : "끝점："}[lang] %></div>
+			<div class="col-sm-9">
+				<select class="custom-select" id="to_line_select" onchange="to_line_changed()">
+					<option selected value="">-- <%= {j:"路線選択", e:"Select Line", c:"路线", k:"노선선택"}[lang] %> --</option>
+					<% lineList() %>
+				</select>
+				<select class="custom-select" id="to_select" onchange="to_sta_changed()">
+				</select>
+				<input type="text" id="to_dummy" hidden />
+			</div>
+		</div>
+
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "ダイヤ：", e: "Schedule : ", c: "时刻表：", k : "시간표："}[lang] %></div>
+			<div class="col-sm-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="dayType_WK" name="dayType" value="WK"<%= checked_wk %>>
+					<label class="form-check-label" for="dayType_WK"><%= {j:"平日 (月~金)", e:"Weekdays (Mon-Fri)", c:"平日 (周一至五)", k:"평일 (월 ~ 금)"}[lang] %></label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="dayType_PH" name="dayType" value="PH"<%= checked_ph %>>
+					<label class="form-check-label" for="dayType_PH"><%= {j:"土曜・休日", e:"Weekends & Holidays", c:"周末及假日", k:"주말및공휴일"}[lang] %></label>
+				</div>
+			</div>
+		</div>
+
+		<div class="row trip-planner-form-row">
+			<div class="col-sm-3"><%= {j: "時間：", e: "Time : ", c: "时间：", k : "시간："}[lang] %></div>
+			<div class="col-4 col-sm-3" style="padding-right: 1px;">
+				<select class="custom-select" id="time_select" onchange="time_changed()">
+					<option value="N"><%= {j: "現在", e: "Now", c: "现在", k : "지금"}[lang] %></option>
+					<option value="D"><%= {j: "出発：", e: "Depart:", c: "出发：", k : "출발："}[lang] %></option>
+					<option value="A"><%= {j: "到着：", e: "Arrive:", c: "到达：", k : "도착："}[lang] %></option>
+					<option value="F"><%= {j: "始発", e: "First Train", c: "头班车", k : "첫번째셔틀"}[lang] %></option>
+					<option value="L"><%= {j: "終電", e: "Last Train", c: "尾班车", k : "꼬리셔틀"}[lang] %></option>
+				</select>
+			</div>
+			<div class="col-4 col-sm-3" style="padding-left: 1px; padding-right: 1px;">
+				<select class="custom-select" id="hour_select">
+					<% for (var h = 4; h <= 25; h++){
+						var text = {j: "時", e: "h", c: "时", k : "시과"}[lang];
+						%><option value="<%= h %>" <%= $h(h) %>><%= (h%24) + " " + text %></option><% }
+					%>
+				</select>
+			</div>
+			<div class="col-4 col-sm-3" style="padding-left: 1px;">
+				<select class="custom-select" id="minute_select">
+					<% for (var m = 0; m <= 59; m++){
+						var text = {j: "分", e: "m", c: "分", k : "분"}[lang];
+						%><option value="<%= m %>" <%= $m(m) %>><%= (m < 10 ? "0" : "") + parseInt(m) + " " + text %></option><% }
+					%>
+				</select>
+			</div>
+		</div>
+
+		<div class="search-menu">
+			<button type="button" class="btn btn-secondary" onclick="form_submit()"><%= {j:"検索", e:"Search", c:"搜索", k:"수색"}[lang] %></button>
+		</div>
+
+		<script language="javascript">
+
+			var stations = JSON.parse('<%- JSON.stringify(stations).replace("\'", "\\\'") %>');
+
+			function from_sta_changed(){
+				if ($("#to_select").val() == $("#from_select").val()){
+					$("#to_select").val("");
+				}
+				$("#from_dummy").val($("#from_select").val());
+			}
+
+			function to_sta_changed(){
+				if ($("#to_select").val() == $("#from_select").val()){
+					$("#from_select").val("");
+				}
+				$("#to_dummy").val($("#to_select").val());
+			}
+
+			function from_line_changed(){
+				var line = $("#from_line_select").val();
+				$('#from_select').find('option').remove();
+				if (line != ""){
+					$('#from_select').append('<option selected value="">-- <%= {j:"乗車駅選択", e:"Select Station", c:"起点选择", k:"출발점선택"}[lang] %> --</option>');
+					for (var i in stations[line]){
+						$('#from_select').append('<option selected value="' + stations[line][i].id + '">' + stations[line][i].text + '</option>');
+					}
+				}
+				$('#from_select').val("");
+			}
+
+			function to_line_changed(){
+				var line = $("#to_line_select").val();
+				$('#to_select').find('option').remove();
+				if (line != ""){
+					$('#to_select').append('<option selected value="">-- <%= {j:"下車駅選択", e:"Select Station", c:"终点选择", k:"끝점선택"}[lang] %> --</option>');
+					for (var i in stations[line]){
+						$('#to_select').append('<option selected value="' + stations[line][i].id + '">' + stations[line][i].text + '</option>');
+					}
+				}
+				$('#to_select').val("");
+			}
+
+			function time_changed(){
+				if ($("#time_select").val() == "D" || $("#time_select").val() == "A"){
+					$("#hour_select").prop('disabled', false);
+					$("#minute_select").prop('disabled', false);
+				}else{
+					$("#hour_select").prop('disabled', 'disabled');
+					$("#minute_select").prop('disabled', 'disabled');
+				}
+			}
+
+			function form_submit(){
+				var fareType = $("#fareType_IC").is(':checked') ? "I" : "T";
+				var dayType = $("#dayType_WK").is(':checked') ? "WK" : "PH";
+				if ($("#from_select").val() == "" || $("#from_select").val() == null){
+				} else if ($("#to_select").val() == "" || $("#to_select").val() == null){
+				} else{
+					var time = $("#time_select").val();
+					var hm_required = (time == "D" || time == "A" || time == "N");
+					if (time == "N"){
+						time = "D";
+						var now = new Date();
+						now = now.getHours() * 60 + now.getMinutes() + 1;
+						var h = Math.floor(now / 60);
+						if (h < 2) h += 24;
+						var m = now % 60;
+					}else{
+						var h = $("#hour_select").val();
+						var m = $("#minute_select").val();
+					}
+					var url = "/trip-planner/"+dayType+"/"+$("#from_select").val()+"/"+$("#to_select").val()+"/"+fareType+"/"+time+ (hm_required ? ("/"+h+"/"+m) : "");
+					window.location.pathname = url;
+				}
+			}
+
+			time_changed();
+			from_line_changed();
+			to_line_changed();
+			$("#from_select").val($("#from_dummy").val());
+			$("#to_select").val($("#to_dummy").val());
+
+		</script>
+
+	</div>
+</div>
+
+<%- include('footer'); %>
